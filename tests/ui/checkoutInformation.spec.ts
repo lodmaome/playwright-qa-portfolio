@@ -1,57 +1,56 @@
 import { Messages } from "@/constants/messages";
-import { test, expect } from "../../fixtures";
 import { CUSTOMER } from "../../constants/customer";
+import { expect, test } from "../../fixtures";
 
 test("should receive error when first name is not provided", async ({
-  checkoutInformationPage,
+  checkoutReady,
 }) => {
-  await checkoutInformationPage.continueCheckout();
-  await expect(checkoutInformationPage.errorMessage).toHaveText(
+  await checkoutReady.continueCheckout();
+  await expect(checkoutReady.errorMessage).toHaveText(
     Messages.CHECKOUT_INFORMATION_PAGE.MISSING_FIRST_NAME,
   );
 });
 
 test("should receive error when last name is not provided", async ({
-  checkoutInformationPage,
+  checkoutReady,
 }) => {
-  await checkoutInformationPage.completePersonalInformation(
+  await checkoutReady.completePersonalInformation(
     CUSTOMER.firstName,
     "",
     CUSTOMER.postalCode,
   );
-  await expect(checkoutInformationPage.errorMessage).toHaveText(
+  await expect(checkoutReady.errorMessage).toHaveText(
     Messages.CHECKOUT_INFORMATION_PAGE.MISSING_LAST_NAME,
   );
 });
 
 test("should receive error when postal code is not provided", async ({
-  checkoutInformationPage,
+  checkoutReady,
 }) => {
-  await checkoutInformationPage.completePersonalInformation(
+  await checkoutReady.completePersonalInformation(
     CUSTOMER.firstName,
     CUSTOMER.lastName,
     "",
   );
-  await expect(checkoutInformationPage.errorMessage).toHaveText(
+  await expect(checkoutReady.errorMessage).toHaveText(
     Messages.CHECKOUT_INFORMATION_PAGE.MISSING_ZIP_CODE,
   );
 });
 
 test("should go back to cart page when cancel button is clicked", async ({
-  checkoutInformationPage,
+  checkoutReady,
 }) => {
-  const cartPage = await checkoutInformationPage.cancelCheckout();
+  const cartPage = await checkoutReady.cancelCheckout();
   await expect(cartPage.title).toHaveText("Your Cart");
 });
 
 test("should navigate to checkout overview page when finish button is clicked", async ({
-  checkoutInformationPage,
+  checkoutReady,
 }) => {
-  const checkoutOverviewPage =
-    await checkoutInformationPage.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
-    );
+  const checkoutOverviewPage = await checkoutReady.completePersonalInformation(
+    CUSTOMER.firstName,
+    CUSTOMER.lastName,
+    CUSTOMER.postalCode,
+  );
   await expect(checkoutOverviewPage.title).toHaveText("Checkout: Overview");
 });

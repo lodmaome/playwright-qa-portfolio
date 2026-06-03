@@ -1,7 +1,6 @@
 import { test as base } from "@playwright/test";
+import { PRODUCTS } from "../constants/products";
 import { InventoryPage } from "../pages/InventoryPage";
-import {PRODUCTS} from "../constants/products";
-
 
 type InventoryFixtures = {
   inventoryPage: InventoryPage;

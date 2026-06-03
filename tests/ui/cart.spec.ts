@@ -1,7 +1,5 @@
-import { test, expect } from "../../fixtures";
-import { InventoryPage } from "../../pages/InventoryPage";
 import { PRODUCTS } from "../../constants/products";
-import { CUSTOMER } from "../../constants/customer";
+import { expect, test } from "../../fixtures";
 
 test("Should display added items on the cart page", async ({
   cartPageWithItem,
@@ -37,7 +35,9 @@ test("Should navigate to checkout page when checkout button is clicked", async (
 test("Should display multiple added items on the cart page", async ({
   cartPageWithMultipleItems,
 }) => {
-  console.log((await cartPageWithMultipleItems.products.allTextContents()).toString());
+  console.log(
+    (await cartPageWithMultipleItems.products.allTextContents()).toString(),
+  );
   await expect(cartPageWithMultipleItems.products).toContainText([
     PRODUCTS.BIKE_LIGHT,
     PRODUCTS.BACKPACK,

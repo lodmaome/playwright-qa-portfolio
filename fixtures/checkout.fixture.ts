@@ -1,7 +1,7 @@
 import { cartTest } from "./cart.fixture";
 
-import { CheckoutInformationPage } from "@/pages/CheckoutInformationPage";
 import { CheckoutCompletePage } from "@/pages/CheckoutCompletePage";
+import { CheckoutInformationPage } from "@/pages/CheckoutInformationPage";
 
 import { CUSTOMER } from "@/constants/customer";
 

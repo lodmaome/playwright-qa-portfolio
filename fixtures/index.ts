@@ -1,2 +1,2 @@
-export { test } from "./checkout.fixture";
 export { expect } from "@playwright/test";
+export { test } from "./checkout.fixture";

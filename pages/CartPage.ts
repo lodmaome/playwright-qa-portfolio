@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
-import { InventoryPage } from "./InventoryPage";
 import { CheckoutInformationPage } from "./CheckoutInformationPage";
+import { InventoryPage } from "./InventoryPage";
 
 export class CartPage {
   constructor(private page: Page) {}

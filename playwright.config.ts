@@ -38,12 +38,13 @@ export default defineConfig({
   projects: [
     {
       name: "setup",
-      testMatch: /.*\.setup\.ts/,
-      // testMatch: /auth\.setup\.ts/,
+      testDir: "tests/ui",
+      testMatch: "**/*.setup.ts",
     },
     {
       name: "login",
-      testMatch: /login\.spec\.ts/,
+      testDir: "tests/ui",
+      testMatch: "login.spec.ts",
     },
     {
       name: "e2e",
@@ -52,7 +53,13 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         storageState: ".auth/login.json",
       },
-      testIgnore: /login\.spec\.ts/,
+      testMatch: "**/*.spec.ts",
+      testIgnore: ["**/*.setup.ts"],
+    },
+    {
+      name: "api",
+      testDir: "tests/api",
+      testMatch: "**/*.spec.ts",
     },
 
     // {

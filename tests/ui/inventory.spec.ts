@@ -1,6 +1,5 @@
-import { test, expect } from "../../fixtures";
-import {PRODUCTS} from "../../constants/products";
-
+import { PRODUCTS } from "../../constants/products";
+import { expect, test } from "../../fixtures";
 
 test("inventory page loads correctly", async ({ inventoryPage }) => {
   await expect(inventoryPage.title).toHaveText("Products");
