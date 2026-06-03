@@ -1,47 +1,59 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../../fixtures";
 import { InventoryPage } from "../../pages/InventoryPage";
+import { PRODUCTS } from "../../constants/products";
+import { CUSTOMER } from "../../constants/customer";
 
-test("Should display added items on the cart page", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-  await inventoryPage.addProductToCart("Sauce Labs Fleece Jacket");
-
-  const cartPage = await inventoryPage.goToCart();
-  expect(await cartPage.getProductNames()).toEqual([
-    "Sauce Labs Fleece Jacket",
-  ]);
+test("Should display added items on the cart page", async ({
+  cartPageWithItem,
+}) => {
+  await expect(cartPageWithItem.products).toContainText([PRODUCTS.BIKE_LIGHT]);
 });
 
-test("Should remove item from the cart successfully", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-  await inventoryPage.addProductToCart("Sauce Labs Onesie");
-  const cartPage = await inventoryPage.goToCart();
-
-  expect(await cartPage.getProductNames()).toContain("Sauce Labs Onesie");
-  await cartPage.removeProductFromCart("Sauce Labs Onesie");
-  expect(await cartPage.getProductNames()).not.toContain("Sauce Labs Onesie");
+test("Should remove item from the cart successfully", async ({
+  cartPageWithItem,
+}) => {
+  await expect(cartPageWithItem.products).toContainText([PRODUCTS.BIKE_LIGHT]);
+  await cartPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
+  await expect(cartPageWithItem.products).toHaveCount(0);
 });
 
 test("Should go back to inventory page when Continue shopping button is clicked", async ({
-  page,
+  cartPage,
 }) => {
-  let inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-  const cartPage = await inventoryPage.goToCart();
-  inventoryPage = await cartPage.goToInventory();
+  const inventoryPage = await cartPage.goToInventory();
   await expect(inventoryPage.title).toHaveText("Products");
 });
 
 test("Should navigate to checkout page when checkout button is clicked", async ({
-  page,
+  cartPageWithItem,
 }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-  await inventoryPage.addProductToCart("Test.allTheThings() T-Shirt (Red)");
-  const cartPage = await inventoryPage.goToCart();
-  const checkoutInformationPage = await cartPage.goToCheckout();
+  const checkoutInformationPage = await cartPageWithItem.goToCheckout();
   await expect(checkoutInformationPage.title).toHaveText(
     "Checkout: Your Information",
   );
+});
+
+// validate multiple items in the cart
+test("Should display multiple added items on the cart page", async ({
+  cartPageWithMultipleItems,
+}) => {
+  console.log((await cartPageWithMultipleItems.products.allTextContents()).toString());
+  await expect(cartPageWithMultipleItems.products).toContainText([
+    PRODUCTS.BIKE_LIGHT,
+    PRODUCTS.BACKPACK,
+    PRODUCTS.T_SHIRT,
+    PRODUCTS.JACKET,
+    PRODUCTS.ONESIE,
+  ]);
+});
+
+test("Should show empty cart after removing last item from the cart", async ({
+  cartPageWithItem,
+}) => {
+  await expect(cartPageWithItem.cartBadge).toHaveText("1");
+  await expect(cartPageWithItem.products).toContainText([PRODUCTS.BIKE_LIGHT]);
+
+  await cartPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
+  await expect(cartPageWithItem.products).toHaveCount(0);
+  await expect(cartPageWithItem.cartBadge).toBeHidden();
 });

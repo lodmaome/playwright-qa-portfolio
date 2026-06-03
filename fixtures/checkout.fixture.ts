@@ -1,40 +1,34 @@
-import { test as base } from "@playwright/test";
-import { CheckoutInformationPage } from "../pages/CheckoutInformationPage";
-import { CheckoutOverviewPage } from "../pages/CheckoutOverviewPage";
-import { CheckoutCompletePage } from "@/pages/CheckoutCompletePage";
-import { InventoryPage } from "../pages/InventoryPage";
+import { cartTest } from "./cart.fixture";
 
-type Fixtures = {
-  checkoutInformationPage: CheckoutInformationPage;
-  checkoutOverviewPage: CheckoutOverviewPage;
-  checkoutCompletePage: CheckoutCompletePage;
+import { CheckoutInformationPage } from "@/pages/CheckoutInformationPage";
+import { CheckoutCompletePage } from "@/pages/CheckoutCompletePage";
+
+import { CUSTOMER } from "@/constants/customer";
+
+type CheckoutFixtures = {
+  checkoutReady: CheckoutInformationPage;
+  completedCheckout: CheckoutCompletePage;
 };
 
-export const test = base.extend<Fixtures>({
-  checkoutInformationPage: async ({ page }, FixtureUse) => {
-    const inventoryPage = new InventoryPage(page);
-    await inventoryPage.goto();
-    await inventoryPage.addProductToCart("Sauce Labs Bike Light");
-    const cartPage = await inventoryPage.goToCart();
-    const checkoutInformationPage = await cartPage.goToCheckout();
+export const test = cartTest.extend<CheckoutFixtures>({
+  checkoutReady: async ({ cartPageWithItem }, use) => {
+    const checkoutInformationPage = await cartPageWithItem.goToCheckout();
 
-    //React Hook "use" is called in function "checkoutInformationPage" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".
-    //check this later fixtureUse -> use
-    await FixtureUse(checkoutInformationPage);
+    await use(checkoutInformationPage);
   },
-  checkoutOverviewPage: async ({ checkoutInformationPage }, FixtureUse) => {
+
+  completedCheckout: async ({ cartPageWithItem }, use) => {
+    const checkoutInformationPage = await cartPageWithItem.goToCheckout();
+
     const checkoutOverviewPage =
       await checkoutInformationPage.completePersonalInformation(
-        "Maria",
-        "Joana",
-        "12345",
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
       );
-    await FixtureUse(checkoutOverviewPage);
-  },
-  checkoutCompletePage: async ({ checkoutOverviewPage }, FixtureUse) => {
+
     const checkoutCompletePage = await checkoutOverviewPage.finishCheckout();
-    await FixtureUse(checkoutCompletePage);
+
+    await use(checkoutCompletePage);
   },
 });
-
-export { expect } from "@playwright/test";

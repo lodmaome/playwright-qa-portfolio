@@ -1,7 +1,7 @@
 import { Messages } from "@/constants/messages";
-import { test, expect } from "../../fixtures/checkout.fixture";
+import { test, expect } from "../../fixtures";
+import { CUSTOMER } from "../../constants/customer";
 
-// should receive error when first name is not provided
 test("should receive error when first name is not provided", async ({
   checkoutInformationPage,
 }) => {
@@ -11,27 +11,25 @@ test("should receive error when first name is not provided", async ({
   );
 });
 
-// should receive error when last name is not provided
 test("should receive error when last name is not provided", async ({
   checkoutInformationPage,
 }) => {
   await checkoutInformationPage.completePersonalInformation(
-    "Joao",
+    CUSTOMER.firstName,
     "",
-    "12345",
+    CUSTOMER.postalCode,
   );
   await expect(checkoutInformationPage.errorMessage).toHaveText(
     Messages.CHECKOUT_INFORMATION_PAGE.MISSING_LAST_NAME,
   );
 });
 
-// should receive error when postal code is not provided
 test("should receive error when postal code is not provided", async ({
   checkoutInformationPage,
 }) => {
   await checkoutInformationPage.completePersonalInformation(
-    "Joao",
-    "Silva",
+    CUSTOMER.firstName,
+    CUSTOMER.lastName,
     "",
   );
   await expect(checkoutInformationPage.errorMessage).toHaveText(
@@ -39,7 +37,6 @@ test("should receive error when postal code is not provided", async ({
   );
 });
 
-// should go back to cart page when cancel button is clicked
 test("should go back to cart page when cancel button is clicked", async ({
   checkoutInformationPage,
 }) => {
@@ -47,15 +44,14 @@ test("should go back to cart page when cancel button is clicked", async ({
   await expect(cartPage.title).toHaveText("Your Cart");
 });
 
-// should navigate to checkout overview page when finish button is clicked
 test("should navigate to checkout overview page when finish button is clicked", async ({
   checkoutInformationPage,
 }) => {
   const checkoutOverviewPage =
     await checkoutInformationPage.completePersonalInformation(
-      "Joao",
-      "Silva",
-      "12345",
+      CUSTOMER.firstName,
+      CUSTOMER.lastName,
+      CUSTOMER.postalCode,
     );
   await expect(checkoutOverviewPage.title).toHaveText("Checkout: Overview");
 });

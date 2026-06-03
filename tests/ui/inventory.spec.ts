@@ -1,46 +1,34 @@
-import { test, expect } from "@playwright/test";
-import { InventoryPage } from "../../pages/InventoryPage";
+import { test, expect } from "../../fixtures";
+import {PRODUCTS} from "../../constants/products";
 
-test("inventory page loads correctly", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
+
+test("inventory page loads correctly", async ({ inventoryPage }) => {
   await expect(inventoryPage.title).toHaveText("Products");
 });
 
-test("should add a product to cart successfully", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-
-  await inventoryPage.addProductToCart("Sauce Labs Backpack");
-  await expect(inventoryPage.cartBadge).toHaveText("1");
+test("should add a product to cart successfully", async ({
+  inventoryPageWithItem,
+}) => {
+  await expect(inventoryPageWithItem.cartBadge).toHaveText("1");
 });
 
-test("should remove a product from cart successfully", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-
-  await inventoryPage.addProductToCart("Sauce Labs Bike Light");
-  await expect(inventoryPage.cartBadge).toHaveText("1");
-  await inventoryPage.removeProductFromCart("Sauce Labs Bike Light");
-  await expect(inventoryPage.cartBadge).toHaveCount(0);
+test("should remove a product from cart successfully", async ({
+  inventoryPageWithItem,
+}) => {
+  await expect(inventoryPageWithItem.cartBadge).toHaveText("1");
+  await inventoryPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
+  await expect(inventoryPageWithItem.cartBadge).toHaveCount(0);
 });
 
-test("should sort products from Z-A", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-
+test("should sort products from Z-A", async ({ inventoryPage }) => {
   await inventoryPage.sortProducts("za");
-
-  const productNames = await inventoryPage.productNames.allTextContents();
+  const productNames = await inventoryPage.products.allTextContents();
   expect(productNames).toEqual(
     [...productNames].sort((a, b) => b.localeCompare(a)),
   );
 });
 
-test("should sort products by price high to low", async ({ page }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-
+test("should sort products by price high to low", async ({ inventoryPage }) => {
   await inventoryPage.sortProducts("hilo");
   const prices = (await inventoryPage.productPrices.allTextContents()).map(
     (price) => parseFloat(price.replace("$", "")),
@@ -49,11 +37,8 @@ test("should sort products by price high to low", async ({ page }) => {
 });
 
 test("should navigate to cart page when clicking on cart icon", async ({
-  page,
+  inventoryPage,
 }) => {
-  const inventoryPage = new InventoryPage(page);
-  await inventoryPage.goto();
-  await inventoryPage.addProductToCart("Sauce Labs Bike Light");
   const cartPage = await inventoryPage.goToCart();
   await expect(cartPage.title).toHaveText("Your Cart");
 });

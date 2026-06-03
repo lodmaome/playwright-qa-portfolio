@@ -20,8 +20,12 @@ export class CartPage {
       .click();
   }
 
-  async getProductNames() {
-    return await this.page.locator(".inventory_item_name").allTextContents();
+  get products() {
+    return this.page.locator(".inventory_item_name");
+  }
+
+  get cartBadge() {
+    return this.page.locator(".shopping_cart_badge");
   }
 
   async goToInventory(): Promise<InventoryPage> {

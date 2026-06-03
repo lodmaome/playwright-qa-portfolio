@@ -1,8 +1,8 @@
-import { test, expect } from "../../fixtures/checkout.fixture";
+import { test, expect } from "../../fixtures";
 
 test("should navigate to inventory page when back home button is clicked", async ({
-  checkoutCompletePage,
+  completedCheckout,
 }) => {
-  const inventoryPage = await checkoutCompletePage.backHome();
+  const inventoryPage = await completedCheckout.backHome();
   await expect(inventoryPage.title).toHaveText("Products");
 });

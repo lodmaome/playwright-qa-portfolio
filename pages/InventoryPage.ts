@@ -8,7 +8,7 @@ export class InventoryPage {
     return this.page.locator(".shopping_cart_badge");
   }
 
-  get productNames() {
+  get products() {
     return this.page.locator(".inventory_item_name");
   }
 
