@@ -1,6 +1,6 @@
 import { test as setup } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
-import { env } from "../config/env";
+import { LoginPage } from "../../pages/LoginPage";
+import { env } from "../../config/env";
 
 setup("authenticate", async ({ page }) => {
   const loginPage = new LoginPage(page);

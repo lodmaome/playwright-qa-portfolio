@@ -1,15 +1,20 @@
-import { test as base } from '@playwright/test';
-import { ApiClient } from '../tests/api/apiClient';
+import { test as base, expect } from "@playwright/test";
+import { login } from "../tests/api/auth.api";
+import { ApiClient } from "../tests/api/apiClient";
 
-type Fixtures = {
-  api: ApiClient;
+// login create client inject APIs into tests
+type ApiFixtures = {
+  authApi: ApiClient;
 };
 
-export const test = base.extend<Fixtures>({
-  api: async ({ request }, use) => {
-    const api = new ApiClient(request);
-    await use(api);
+export const test = base.extend<ApiFixtures>({
+  authApi: async ({ request }, use) => {
+    const token = await login(request);
+
+    const client = new ApiClient(request, token);
+
+    await use(client);
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect };

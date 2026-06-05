@@ -1,29 +1,52 @@
 import { APIRequestContext } from "@playwright/test";
 
+//authorization header, base requests
 export class ApiClient {
-  constructor(private request: APIRequestContext) {}
+  constructor(
+    private request: APIRequestContext,
+    private token: string,
+  ) {}
 
-  async createProduct(payload: unknown) {
-    return this.request.post("https://fakestoreapi.com/products", {
-      data: payload,
+  async get(url: string) {
+    return this.request.get(url, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
   }
 
-  async getProducts() {
-    return this.request.get("https://fakestoreapi.com/products");
-  }
-
-  async getProductById(id: number) {
-    return this.request.get(`https://fakestoreapi.com/products/${id}`);
-  }
-
-  async updateProduct(id: number, payload: unknown) {
-    return this.request.put(`https://fakestoreapi.com/products/${id}`, {
-      data: payload,
+  async post(url: string, data: unknown) {
+    return this.request.post(url, {
+      data,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
   }
 
-  async deleteProduct(id: number) {
-    return this.request.delete(`https://fakestoreapi.com/products/${id}`);
+    async put(url: string, data: unknown) {
+    return this.request.put(url, {
+      data,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+  }
+
+  async patch(url: string, data: unknown) {
+    return this.request.patch(url, {
+      data,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+  }
+
+  async delete(url: string) {
+    return this.request.delete(url, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
   }
 }
