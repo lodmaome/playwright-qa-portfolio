@@ -5,16 +5,10 @@ import { env } from "../../config/env";
 export async function login(request: APIRequestContext) {
   const response = await request.post("/auth/login", {
     data: {
-      // username: env.api_username,
-      // password: env.api_password,
-      username: "emilys",
-      password: "emilyspass",
-      // expiresInMins: 60,
-    }
-    // ,
-    // headers: {
-    //   "Content-Type": "application/json",
-    // },
+      username: env.api_username,
+      password: env.api_password,
+    },
+
   });
   const body = await response.json();
   return body.accessToken;

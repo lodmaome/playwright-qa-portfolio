@@ -1,21 +1,17 @@
-import { expect, test } from "@playwright/test";
-import { env } from "../../config/env";
-import { Messages } from "../../constants/messages";
-import { LoginPage } from "../../pages/LoginPage";
+import { env } from "../../../config/env";
+import { Messages } from "../../../constants/messages";
+import { expect, test } from "../../../fixtures/login.fixture";
 
-test("should log in successfully with valid credentials", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-
+test("should log in successfully with valid credentials", async ({
+  loginPage,
+}) => {
   const inventoryPage = await loginPage.login(env.username, env.password);
   await inventoryPage.assertLoaded();
 });
 
 test("should display error message for invalid credentials", async ({
-  page,
+  loginPage,
 }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
   await loginPage.login(env.username, "test123");
 
   await expect(loginPage.errorMessage).toHaveText(
@@ -23,9 +19,9 @@ test("should display error message for invalid credentials", async ({
   );
 });
 
-test("should display error message for a locked out user", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
+test("should display error message for a locked out user", async ({
+  loginPage,
+}) => {
   await loginPage.login(env.locked_out_username, env.password);
 
   await expect(loginPage.errorMessage).toHaveText(
@@ -34,10 +30,8 @@ test("should display error message for a locked out user", async ({ page }) => {
 });
 
 test("should display error message when username is missing", async ({
-  page,
+  loginPage,
 }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
   await loginPage.login("", env.password);
 
   await expect(loginPage.errorMessage).toHaveText(
@@ -46,10 +40,8 @@ test("should display error message when username is missing", async ({
 });
 
 test("should display error message when password is missing", async ({
-  page,
+  loginPage,
 }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
   await loginPage.login(env.username, "");
 
   await expect(loginPage.errorMessage).toHaveText(

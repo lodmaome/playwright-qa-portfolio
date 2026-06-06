@@ -1,7 +1,7 @@
-import { CUSTOMER } from "../../constants/customer";
-import { Messages } from "../../constants/messages";
-import { PRODUCTS } from "../../constants/products";
-import { expect, test } from "../../fixtures";
+import { CUSTOMER } from "../../../constants/customer";
+import { Messages } from "../../../constants/messages";
+import { PRODUCTS } from "../../../constants/products";
+import { expect, test } from "../../../fixtures";
 
 test("should display items added to cart on checkout overview page", async ({
   checkoutReady,

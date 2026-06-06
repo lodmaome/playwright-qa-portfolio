@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures";
+import { expect, test } from "../../../fixtures";
 
 test("should navigate to inventory page when back home button is clicked", async ({
   completedCheckout,

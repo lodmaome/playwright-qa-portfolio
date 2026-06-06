@@ -2,7 +2,6 @@ import { test as base, expect } from "@playwright/test";
 import { login } from "../tests/api/auth.api";
 import { ApiClient } from "../tests/api/apiClient";
 
-// login create client inject APIs into tests
 type ApiFixtures = {
   authApi: ApiClient;
 };

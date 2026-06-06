@@ -1,5 +1,5 @@
-import { PRODUCTS } from "../../constants/products";
-import { expect, test } from "../../fixtures";
+import { PRODUCTS } from "../../../constants/products";
+import { expect, test } from "../../../fixtures";
 
 test("Should display added items on the cart page", async ({
   cartPageWithItem,
