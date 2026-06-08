@@ -41,3 +41,22 @@ test("should navigate to cart page when clicking on cart icon", async ({
   const cartPage = await inventoryPage.goToCart();
   await expect(cartPage.title).toHaveText("Your Cart");
 });
+
+test("inventory page loads within performance budget", async ({ page, inventoryPage }) => {
+  const [response] = await Promise.all([
+    page.waitForResponse((r) => r.url().includes("inventory")),
+    page.goto("/inventory.html"),
+  ]);
+
+  const timing = await page.evaluate(() => {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    return {
+      domContentLoaded: nav.domContentLoadedEventEnd - nav.startTime,
+      loadEvent: nav.loadEventEnd - nav.startTime,
+      firstPaint: performance.getEntriesByName("first-paint")[0]?.startTime,
+    };
+  });
+
+  expect(timing.domContentLoaded).toBeLessThan(3000);
+  expect(timing.loadEvent).toBeLessThan(5000);
+});

@@ -11,20 +11,36 @@ export class LoginPage {
   async login(username: string, password: string) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
-    await this.page.locator("#login-button").click();
+    await this.loginButton.click();
 
     return new InventoryPage(this.page);
   }
 
-  private get usernameInput() {
+  get usernameInput() {
     return this.page.locator("#user-name");
   }
 
-  private get passwordInput() {
+  get passwordInput() {
     return this.page.locator("#password");
   }
 
   get errorMessage() {
     return this.page.locator("h3[data-test='error']");
+  }
+
+  get loginButton() {
+    return this.page.locator("#login-button");
+  }
+
+  get title() {
+    return this.page.locator(".title");
+  }
+
+  async pressTab() {
+    await this.page.keyboard.press("Tab");
+  }
+
+  async pressEnter() {
+    await this.page.keyboard.press("Enter");
   }
 }

@@ -11,6 +11,7 @@ export default defineConfig({
     baseURL: process.env.UI_BASE_URL,
     apiBaseUrl: process.env.API_BASE_URL,
     trace: "on-first-retry",
+    browserName: "chromium",
   },
 
   projects: [
@@ -43,16 +44,15 @@ export default defineConfig({
       use: { baseURL: process.env.API_BASE_URL },
     },
     {
-      name: "accessibility-login",
+      name: "accessibility",
       testDir: "tests/accessibility",
-      testMatch: "**/login-a11y.spec.ts",
+      testMatch: ["**/login-a11y.spec.ts", "**/keyboard-navigation.spec.ts"],
       use: {
         baseURL: process.env.BASE_URL,
       },
     },
-
     {
-      name: "accessibility",
+      name: "accessibility-authenticated",
       testDir: "tests/accessibility/authenticated",
       dependencies: ["setup"],
       use: {
@@ -67,6 +67,13 @@ export default defineConfig({
       use: {
         baseURL: process.env.BASE_URL,
         storageState: ".auth/login.json",
+      },
+    },
+    {
+      name: "mobile",
+      testDir: "tests/mobile/",
+      use: {
+        baseURL: process.env.BASE_URL,
       },
     },
   ],
