@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/api.fixture";
+import { expect, test } from "../../fixtures/api.fixture";
 
 // DummyJSON docs: /docs/products
 // Endpoints are simulated — mutations do NOT persist on the server
@@ -239,4 +239,19 @@ test.describe("Products API", () => {
       expect(response.status()).toBe(404);
     });
   });
+});
+
+test("products endpoint average response time", async ({ request }) => {
+  const times: number[] = [];
+
+  for (let i = 0; i < 5; i++) {
+    const start = Date.now();
+    await request.get("products");
+    times.push(Date.now() - start);
+  }
+
+  const average = times.reduce((a, b) => a + b) / times.length;
+  console.log(times);
+  console.log(average);
+  expect(average).toBeLessThan(800);
 });

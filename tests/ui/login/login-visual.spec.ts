@@ -16,4 +16,3 @@ test.describe("Login Visual", () => {
     await expect(page).toHaveScreenshot("login-invalid-credentials.png");
   });
 });
-// npx playwright test login-visual.spec.ts --update-snapshots

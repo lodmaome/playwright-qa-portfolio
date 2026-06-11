@@ -42,21 +42,74 @@ test("should navigate to cart page when clicking on cart icon", async ({
   await expect(cartPage.title).toHaveText("Your Cart");
 });
 
-test("inventory page loads within performance budget", async ({ page, inventoryPage }) => {
-  const [response] = await Promise.all([
-    page.waitForResponse((r) => r.url().includes("inventory")),
-    page.goto("/inventory.html"),
-  ]);
 
+test("inventory page loads within performance budget", async ({
+  page,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  inventoryPage,
+}) => {
   const timing = await page.evaluate(() => {
-    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    const nav = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
+
     return {
       domContentLoaded: nav.domContentLoadedEventEnd - nav.startTime,
       loadEvent: nav.loadEventEnd - nav.startTime,
-      firstPaint: performance.getEntriesByName("first-paint")[0]?.startTime,
+      ttfb: nav.responseStart - nav.requestStart,
     };
   });
 
+  expect(timing.ttfb).toBeLessThan(1000);
   expect(timing.domContentLoaded).toBeLessThan(3000);
   expect(timing.loadEvent).toBeLessThan(5000);
+});
+
+test("all critical assets load successfully", async ({ page }) => {
+  const failed: string[] = [];
+
+  page.on("response", (response) => {
+    const type = response.request().resourceType();
+
+    if (
+      ["stylesheet", "script", "image", "font"].includes(type) &&
+      response.status() >= 400
+    ) {
+      failed.push(`${response.status()} ${response.url()}`);
+    }
+  });
+
+  await page.goto("/inventory.html");
+
+  expect(failed, `Failed assets:\n${failed.join("\n")}`).toEqual([]);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+test("capture web vitals", async ({ page, inventoryPage }) => {
+  type WebVitalsMetrics = {
+    lcp?: number;
+  };
+
+  const metrics = await page.evaluate(() => {
+    return new Promise<WebVitalsMetrics>((resolve) => {
+      const result: WebVitalsMetrics = {};
+
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === "largest-contentful-paint") {
+            result.lcp = entry.startTime;
+          }
+        }
+      });
+
+      observer.observe({
+        type: "largest-contentful-paint",
+        buffered: true,
+      });
+
+      setTimeout(() => resolve(result), 2000);
+    });
+  });
+
+  console.log(metrics);
 });
