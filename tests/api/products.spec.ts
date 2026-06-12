@@ -27,11 +27,12 @@ test.describe("Products API", () => {
       expect(result.success, result.error?.message).toBe(true);
 
       for (const product of result.data!.products) {
-        const productResult = ProductSchema.safeParse(product);
-        expect(
-          result.success,
-          JSON.stringify(z.treeifyError(productResult.error!), null, 2),
-        ).toBe(true);
+        const parsedProduct = ProductSchema.safeParse(product);
+        
+        expect(parsedProduct.success).toBeTruthy();
+        if (!parsedProduct.success) {
+          console.error(z.treeifyError(parsedProduct.error));
+        }
       }
     });
 
@@ -248,7 +249,5 @@ test("products endpoint average response time", async ({ request }) => {
   }
 
   const average = times.reduce((a, b) => a + b) / times.length;
-  console.log(times);
-  console.log(average);
   expect(average).toBeLessThan(800);
 });

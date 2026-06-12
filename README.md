@@ -1,10 +1,14 @@
 # QA Automation Portfolio — Playwright + TypeScript
 
+[![Playwright Tests](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml)
+[![Playwright](https://img.shields.io/badge/playwright-1.60.0-blue)](https://playwright.dev)
+[![License](https://img.shields.io/github/license/lodmaome/playwright-qa-portfolio)](LICENSE)
+
+## Introduction
+
 A full-stack test automation suite targeting a production-grade e-commerce
 app (SauceDemo) and a REST API (DummyJSON). Built to demonstrate patterns
 and practices expected at a senior QA automation level.
-
-[![Playwright Tests](https://github.com/lodmaome/playright_portfolio/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/lodmaome/playright_portfolio/actions/workflows/playwright.yml)
 
 ## Architecture decisions and why they matter
 
@@ -40,7 +44,7 @@ returns the target page object. Tests read like a user story:
 
 ## Running the suite
 
-\`\`\`bash
+```bash
 cp .env.example .env      # fill in credentials — see .env.example for hints
 npm ci
 npx playwright install
@@ -49,11 +53,11 @@ npx playwright test --project=api            # API only (no browser)
 npx playwright test --project=e2e            # authenticated UI only
 npx playwright test --project=accessibility  # a11y only
 npx playwright test --project=visual --update-snapshots  # refresh baselines
-\`\`\`
+```
 
 ## Viewing results
 
-\`\`\`bash
+```bash
 npx playwright show-report    # built-in HTML report
 npm run report:allure         # Allure report (richer history + trends)
-\`\`\`
+```

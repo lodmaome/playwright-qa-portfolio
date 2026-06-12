@@ -30,10 +30,11 @@ test.describe("Users API", () => {
 
       for (const user of result.data!.users) {
         const userResult = UserSchema.safeParse(user);
-        expect(
-          result.success,
-          JSON.stringify(z.treeifyError(userResult.error!), null, 2),
-        ).toBe(true);
+
+        expect(userResult.success).toBeTruthy();
+        if (!userResult.success) {
+          console.error(z.treeifyError(userResult.error));
+        }
       }
     });
 
