@@ -1,7 +1,6 @@
+import z from "zod";
 import { expect, test } from "../../fixtures/api.fixture";
-
-// DummyJSON docs: /docs/products
-// Endpoints are simulated — mutations do NOT persist on the server
+import { ProductListSchema, ProductSchema } from "./schemas/product.schema";
 
 test.describe("Products API", () => {
   test.describe("GET /products", () => {
@@ -22,19 +21,17 @@ test.describe("Products API", () => {
 
     test("each product has the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/products?limit=5");
-      const { products } = await response.json();
+      const body = await response.json();
 
-      for (const product of products) {
-        expect(product).toMatchObject({
-          id: expect.any(Number),
-          title: expect.any(String),
-          description: expect.any(String),
-          price: expect.any(Number),
-          rating: expect.any(Number),
-          stock: expect.any(Number),
-          category: expect.any(String),
-          thumbnail: expect.any(String),
-        });
+      const result = ProductListSchema.safeParse(body);
+      expect(result.success, result.error?.message).toBe(true);
+
+      for (const product of result.data!.products) {
+        const productResult = ProductSchema.safeParse(product);
+        expect(
+          result.success,
+          JSON.stringify(z.treeifyError(productResult.error!), null, 2),
+        ).toBe(true);
       }
     });
 

@@ -1,21 +1,22 @@
-import { devices, expect, test } from "@playwright/test";
+import { devices } from "@playwright/test";
+import { env } from "../../config/env";
+import { expect, test } from "../../fixtures/login.fixture";
 
-test.use({
-  ...devices["iPhone 13"],
-});
+test.use({ ...devices["iPhone 13"] });
 
-test.describe("Mobile Login", () => {
-  test("user can login on mobile", async ({ page }) => {
-    await page.goto("https://www.saucedemo.com/");
-
-    await page.getByPlaceholder("Username").fill("standard_user");
-    await page.getByPlaceholder("Password").fill("secret_sauce");
-
-    await page.getByRole("button", { name: "Login" }).click();
-
-    await expect(page).toHaveURL(/inventory/);
+test.describe("Mobile — Login", () => {
+  test("user can log in on mobile viewport", async ({ page, loginPage }) => {
+    const inventoryPage = await loginPage.login(env.username, env.password);
+    await inventoryPage.assertLoaded();
     await expect(page.locator(".inventory_list")).toBeVisible();
   });
-});
 
-//TODO
+  test("cart icon is visible and tappable on mobile", async ({
+    page,
+    loginPage,
+  }) => {
+    const inventoryPage = await loginPage.login(env.username, env.password);
+    await inventoryPage.assertLoaded();
+    await expect(page.locator(".shopping_cart_link")).toBeVisible();
+  });
+});

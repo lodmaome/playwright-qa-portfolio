@@ -1,4 +1,6 @@
+import z from "zod";
 import { test, expect } from "../../fixtures/api.fixture";
+import { UserListSchema, UserSchema } from "./schemas/user.schema";
 
 // DummyJSON docs: /docs/users
 
@@ -21,20 +23,17 @@ test.describe("Users API", () => {
 
     test("each user has the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/users?limit=5");
-      const { users } = await response.json();
+      const body = await response.json();
 
-      for (const user of users) {
-        expect(user).toMatchObject({
-          id: expect.any(Number),
-          firstName: expect.any(String),
-          lastName: expect.any(String),
-          username: expect.any(String),
-          email: expect.any(String),
-          phone: expect.any(String),
-          age: expect.any(Number),
-          gender: expect.any(String),
-          role: expect.any(String),
-        });
+      const result = UserListSchema.safeParse(body);
+      expect(result.success, result.error?.message).toBe(true);
+
+      for (const user of result.data!.users) {
+        const userResult = UserSchema.safeParse(user);
+        expect(
+          result.success,
+          JSON.stringify(z.treeifyError(userResult.error!), null, 2),
+        ).toBe(true);
       }
     });
 
@@ -178,7 +177,7 @@ test.describe("Users API", () => {
       expect(body.email).toBe(newUser.email);
     });
 
-    //it does return the password
+    //it does return the password ☺
     // test("does not return the password in the response", async ({
     //   authApi,
     // }) => {

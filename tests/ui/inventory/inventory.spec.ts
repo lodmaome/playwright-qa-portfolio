@@ -42,7 +42,6 @@ test("should navigate to cart page when clicking on cart icon", async ({
   await expect(cartPage.title).toHaveText("Your Cart");
 });
 
-
 test("inventory page loads within performance budget", async ({
   page,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

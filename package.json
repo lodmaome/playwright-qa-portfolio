@@ -6,24 +6,31 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+
+    "report:allure": "allure generate allure-results --clean -o allure-report && allure open allure-report",
+    "report:open": "playwright show-report"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "next": "^16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4.3.0",
-    "@types/node": "^20.19.41",
-    "@types/react": "^19.2.15",
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "allure-commandline": "^2.42.1",
+    "allure-playwright": "^3.10.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
+
 }
