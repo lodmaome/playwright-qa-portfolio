@@ -1,3 +1,4 @@
+import { waitForStableState } from "@/tests/utils/retry";
 import { CUSTOMER } from "../../../constants/customer";
 import { expect, test } from "../../../fixtures/";
 
@@ -6,7 +7,7 @@ test.describe("Checkout Visual", () => {
     page,
     checkoutReady,
   }) => {
-    await page.waitForLoadState("networkidle");
+    await waitForStableState(page);
     await expect(page).toHaveScreenshot("checkout-info.png");
   });
 
@@ -21,7 +22,7 @@ test.describe("Checkout Visual", () => {
         CUSTOMER.postalCode,
       );
 
-    await page.waitForLoadState("networkidle");
+    await waitForStableState(page);
     await expect(page).toHaveScreenshot("checkout-overview.png");
   });
 
@@ -29,7 +30,7 @@ test.describe("Checkout Visual", () => {
     page,
     completedCheckout,
   }) => {
-    await page.waitForLoadState("networkidle");
+    await waitForStableState(page);
     await expect(page).toHaveScreenshot("checkout-complete.png");
   });
 });

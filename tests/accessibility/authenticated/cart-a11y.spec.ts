@@ -1,12 +1,12 @@
+import { waitForStableState } from "@/tests/utils/retry";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "../../fixtures/login.fixture";
-import { waitForStableState } from "../../tests/utils/retry";
+import { expect, test } from "../../../fixtures";
 
-test.describe("Login Accessibility", () => {
-  test("should have no severe accessibility violations", async ({
+test.describe("Cart Accessibility", () => {
+  test("cart page with items has no critical violations", async ({
     page,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    loginPage,
+    cartPageWithItem,
   }, testInfo) => {
     await waitForStableState(page);
 
@@ -18,7 +18,7 @@ test.describe("Login Accessibility", () => {
       ["critical", "serious"].includes(v.impact ?? ""),
     );
 
-    await testInfo.attach("axe-login-report", {
+    await testInfo.attach("axe-cart-report", {
       body: JSON.stringify(results, null, 2),
       contentType: "application/json",
     });

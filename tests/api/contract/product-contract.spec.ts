@@ -1,3 +1,10 @@
+/**
+ * Contract boundary tests — validates data integrity rules that Zod schemas
+ * alone cannot express. These catch regressions where the API returns
+ * technically valid data that violates business invariants (e.g. negative
+ * prices, ratings out of range across the full product catalog).
+ */
+
 import { expect, test } from "../../../fixtures/api.fixture";
 import { ProductSchema } from "../schemas/product.schema";
 

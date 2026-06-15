@@ -15,12 +15,8 @@ test("should remove a product from cart successfully", async ({
   inventoryPageWithItem,
 }) => {
   await expect(inventoryPageWithItem.cartBadge).toHaveText("1");
-  await test.step("remove item from the cart", async () => {
-    await inventoryPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
-  });
-  await test.step("cart badge should be zero", async () => {
-    await expect(inventoryPageWithItem.cartBadge).toHaveCount(0);
-  });
+  await inventoryPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
+  await expect(inventoryPageWithItem.cartBadge).toHaveCount(0);
 });
 
 test("should navigate to cart page when clicking on cart icon", async ({

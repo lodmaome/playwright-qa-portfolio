@@ -28,7 +28,7 @@ test.describe("Products API", () => {
 
       for (const product of result.data!.products) {
         const parsedProduct = ProductSchema.safeParse(product);
-        
+
         expect(parsedProduct.success).toBeTruthy();
         if (!parsedProduct.success) {
           console.error(z.treeifyError(parsedProduct.error));
@@ -242,12 +242,16 @@ test.describe("Products API", () => {
 test("products endpoint average response time", async ({ request }) => {
   const times: number[] = [];
 
-  for (let i = 0; i < 5; i++) {
-    const start = Date.now();
-    await request.get("products");
-    times.push(Date.now() - start);
-  }
+  await test.step("collect 5 response time samples", async () => {
+    for (let i = 0; i < 5; i++) {
+      const start = Date.now();
+      await request.get("products");
+      times.push(Date.now() - start);
+    }
+  });
 
-  const average = times.reduce((a, b) => a + b) / times.length;
-  expect(average).toBeLessThan(800);
+  await test.step("assert average is under 800ms", async () => {
+    const average = times.reduce((a, b) => a + b) / times.length;
+    expect(average).toBeLessThan(800);
+  });
 });

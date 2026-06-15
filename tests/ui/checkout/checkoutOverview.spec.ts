@@ -19,13 +19,18 @@ test("should display items added to cart on checkout overview page", async ({
 test("should go back to inventory page when cancel button is clicked", async ({
   checkoutReady,
 }) => {
-  const checkoutOverviewPage = await checkoutReady.completePersonalInformation(
-    CUSTOMER.firstName,
-    CUSTOMER.lastName,
-    CUSTOMER.postalCode,
-  );
-  const inventoryPage = await checkoutOverviewPage.cancelCheckout();
-  await expect(inventoryPage.title).toHaveText("Products");
+  await test.step("complete checkout information form", async () => {
+    const checkoutOverviewPage =
+      await checkoutReady.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
+    await test.step("cancel from overview and verify redirect", async () => {
+      const inventoryPage = await checkoutOverviewPage.cancelCheckout();
+      await expect(inventoryPage.title).toHaveText("Products");
+    });
+  });
 });
 
 test("should navigate to checkout complete page when finish button is clicked", async ({

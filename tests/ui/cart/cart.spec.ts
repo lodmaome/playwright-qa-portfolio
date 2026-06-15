@@ -31,20 +31,18 @@ test("Should navigate to checkout page when checkout button is clicked", async (
   );
 });
 
-// validate multiple items in the cart
 test("Should display multiple added items on the cart page", async ({
   cartPageWithMultipleItems,
 }) => {
-  console.log(
-    (await cartPageWithMultipleItems.products.allTextContents()).toString(),
-  );
-  await expect(cartPageWithMultipleItems.products).toContainText([
-    PRODUCTS.BIKE_LIGHT,
-    PRODUCTS.BACKPACK,
-    PRODUCTS.T_SHIRT,
-    PRODUCTS.JACKET,
-    PRODUCTS.ONESIE,
-  ]);
+  await test.step("verify all 5 products appear in cart", async () => {
+    await expect(cartPageWithMultipleItems.products).toContainText([
+      PRODUCTS.BIKE_LIGHT,
+      PRODUCTS.BACKPACK,
+      PRODUCTS.T_SHIRT,
+      PRODUCTS.JACKET,
+      PRODUCTS.ONESIE,
+    ]);
+  });
 });
 
 test("Should show empty cart after removing last item from the cart", async ({

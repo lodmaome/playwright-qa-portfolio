@@ -1,8 +1,9 @@
+import { waitForStableState } from "@/tests/utils/retry";
 import { expect, test } from "../../../fixtures/";
 
 test.describe("Cart Visual", () => {
   test("should match empty cart snapshot", async ({ page, cartPage }) => {
-    await page.waitForLoadState("networkidle");
+    await waitForStableState(page);
     await expect(page).toHaveScreenshot("cart-empty.png");
   });
 
@@ -10,7 +11,7 @@ test.describe("Cart Visual", () => {
     page,
     cartPageWithItem,
   }) => {
-    await page.waitForLoadState("networkidle");
+    await waitForStableState(page);
     await expect(page).toHaveScreenshot("cart-with-items.png");
   });
 });

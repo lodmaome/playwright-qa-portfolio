@@ -14,14 +14,18 @@ test("should receive error when first name is not provided", async ({
 test("should receive error when last name is not provided", async ({
   checkoutReady,
 }) => {
-  await checkoutReady.completePersonalInformation(
-    CUSTOMER.firstName,
-    "",
-    CUSTOMER.postalCode,
-  );
-  await expect(checkoutReady.errorMessage).toHaveText(
-    Messages.CHECKOUT_INFORMATION_PAGE.MISSING_LAST_NAME,
-  );
+  await test.step("fill first name and zip, leave last name empty", async () => {
+    await checkoutReady.completePersonalInformation(
+      CUSTOMER.firstName,
+      "",
+      CUSTOMER.postalCode,
+    );
+  });
+  await test.step("verify last name error message", async () => {
+    await expect(checkoutReady.errorMessage).toHaveText(
+      Messages.CHECKOUT_INFORMATION_PAGE.MISSING_LAST_NAME,
+    );
+  });
 });
 
 test("should receive error when postal code is not provided", async ({

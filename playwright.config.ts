@@ -4,7 +4,7 @@ import "dotenv/config";
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 0,  // retry twice on CI to absorb transient failures
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ["html"],
