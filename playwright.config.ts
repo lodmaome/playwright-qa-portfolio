@@ -51,7 +51,7 @@ export default defineConfig({
     {
       name: "api",
       testDir: "tests/api",
-      testMatch: "**/api/*.spec.ts",
+      //testMatch: "**/api/**/*.spec.ts",
       use: { baseURL: process.env.API_BASE_URL },
     },
     {

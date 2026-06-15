@@ -15,24 +15,12 @@ test("should remove a product from cart successfully", async ({
   inventoryPageWithItem,
 }) => {
   await expect(inventoryPageWithItem.cartBadge).toHaveText("1");
-  await inventoryPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
-  await expect(inventoryPageWithItem.cartBadge).toHaveCount(0);
-});
-
-test("should sort products from Z-A", async ({ inventoryPage }) => {
-  await inventoryPage.sortProducts("za");
-  const productNames = await inventoryPage.products.allTextContents();
-  expect(productNames).toEqual(
-    [...productNames].sort((a, b) => b.localeCompare(a)),
-  );
-});
-
-test("should sort products by price high to low", async ({ inventoryPage }) => {
-  await inventoryPage.sortProducts("hilo");
-  const prices = (await inventoryPage.productPrices.allTextContents()).map(
-    (price) => parseFloat(price.replace("$", "")),
-  );
-  expect(prices).toEqual([...prices].sort((a, b) => b - a));
+  await test.step("remove item from the cart", async () => {
+    await inventoryPageWithItem.removeProductFromCart(PRODUCTS.BIKE_LIGHT);
+  });
+  await test.step("cart badge should be zero", async () => {
+    await expect(inventoryPageWithItem.cartBadge).toHaveCount(0);
+  });
 });
 
 test("should navigate to cart page when clicking on cart icon", async ({

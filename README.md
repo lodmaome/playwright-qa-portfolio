@@ -1,8 +1,8 @@
 # QA Automation Portfolio — Playwright + TypeScript
 
-[![Playwright Tests](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml)
+[![Playwright Tests](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml/badge.svg)](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml)
+[![Allure Report](https://img.shields.io/badge/allure-2.1.0-blue)](https://allure-framework.com)
 [![Playwright](https://img.shields.io/badge/playwright-1.60.0-blue)](https://playwright.dev)
-[![License](https://img.shields.io/github/license/lodmaome/playwright-qa-portfolio)](LICENSE)
 
 ## Introduction
 
