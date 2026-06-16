@@ -3,7 +3,11 @@ import { CheckoutInformationPage } from "./CheckoutInformationPage";
 import { InventoryPage } from "./InventoryPage";
 
 export class CartPage {
-  constructor(private page: Page) {}
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   async removeProductFromCart(productName: string) {
     await this.page

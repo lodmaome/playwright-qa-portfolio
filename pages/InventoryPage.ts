@@ -2,7 +2,11 @@ import { Page, expect } from "@playwright/test";
 import { CartPage } from "./CartPage";
 
 export class InventoryPage {
-  constructor(private page: Page) {}
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   get cartBadge() {
     return this.page.locator(".shopping_cart_badge");

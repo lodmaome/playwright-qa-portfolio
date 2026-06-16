@@ -4,13 +4,11 @@ import { expect, test } from "../../../fixtures";
 
 test.describe("Inventory Accessibility", () => {
   test("inventory page has no critical accessibility violations", async ({
-    page,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     inventoryPage,
   }, testInfo) => {
-    await waitForStableState(page);
+    await waitForStableState(inventoryPage.page);
 
-    const results = await new AxeBuilder({ page })
+    const results = await new AxeBuilder({ page: inventoryPage.page })
       .withTags(["wcag2a", "wcag2aa"])
       .exclude(".product_sort_container") // third-party app violation, not under our control
       .analyze();
@@ -31,12 +29,8 @@ test.describe("Inventory Accessibility", () => {
     ).toHaveLength(0);
   });
 
-  test("all product images have alt text", async ({
-    page,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    inventoryPage,
-  }) => {
-    const images = page.locator(".inventory_item img");
+  test("all product images have alt text", async ({ inventoryPage }) => {
+    const images = inventoryPage.page.locator(".inventory_item img");
     const count = await images.count();
 
     for (let i = 0; i < count; i++) {

@@ -2,7 +2,11 @@ import { Page } from "@playwright/test";
 import { InventoryPage } from "./InventoryPage";
 
 export class CheckoutCompletePage {
-  constructor(private page: Page) {}
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   get title() {
     return this.page.locator(".title");

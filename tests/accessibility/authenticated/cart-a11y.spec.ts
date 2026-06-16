@@ -4,13 +4,11 @@ import { expect, test } from "../../../fixtures";
 
 test.describe("Cart Accessibility", () => {
   test("cart page with items has no critical violations", async ({
-    page,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     cartPageWithItem,
   }, testInfo) => {
-    await waitForStableState(page);
+    await waitForStableState(cartPageWithItem.page);
 
-    const results = await new AxeBuilder({ page })
+    const results = await new AxeBuilder({ page: cartPageWithItem.page })
       .withTags(["wcag2a", "wcag2aa"])
       .analyze();
 

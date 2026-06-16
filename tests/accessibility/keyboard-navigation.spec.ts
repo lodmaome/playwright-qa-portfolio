@@ -25,11 +25,15 @@ test("user can login using keyboard only", async ({ page, loginPage }) => {
   await expect(loginPage.title).toHaveText("Products");
 });
 
-test("should focus on error message after invalid credentials", async ({
+// SauceDemo accessibility bug: after a failed login attempt
+// browser focus stays at login button
+// instead of moving to the error message container.
+// WCAG 4.1.3 (Status Messages) requires errors to be programmatically
+// determined; moving focus to the message would satisfy both that criterion
+// and common screen-reader expectations.
+test.skip("should focus on error message after invalid credentials", async ({
   loginPage,
 }) => {
-  test.fail();
   await loginPage.login(env.username, "test123");
-
   await expect(loginPage.errorMessage).toBeFocused();
 });

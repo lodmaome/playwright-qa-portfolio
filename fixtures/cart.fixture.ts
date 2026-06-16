@@ -11,23 +11,21 @@ type CartFixtures = {
 export const cartTest = inventoryTest.extend<CartFixtures>({
   cartPage: async ({ inventoryPage }, use) => {
     const cartPage = await inventoryPage.goToCart();
-
     await use(cartPage);
   },
 
   cartPageWithItem: async ({ inventoryPageWithItem }, use) => {
     const cartPage = await inventoryPageWithItem.goToCart();
-
     await use(cartPage);
   },
 
-  cartPageWithMultipleItems: async ({ inventoryPageWithItem }, use) => {
-    await inventoryPageWithItem.addProductToCart(PRODUCTS.BACKPACK);
-    await inventoryPageWithItem.addProductToCart(PRODUCTS.T_SHIRT);
-    await inventoryPageWithItem.addProductToCart(PRODUCTS.JACKET);
-    await inventoryPageWithItem.addProductToCart(PRODUCTS.ONESIE);
-    const cartPage = await inventoryPageWithItem.goToCart();
-
+  cartPageWithMultipleItems: async ({ inventoryPage }, use) => {
+    await inventoryPage.addProductToCart(PRODUCTS.BIKE_LIGHT);
+    await inventoryPage.addProductToCart(PRODUCTS.BACKPACK);
+    await inventoryPage.addProductToCart(PRODUCTS.T_SHIRT);
+    await inventoryPage.addProductToCart(PRODUCTS.JACKET);
+    await inventoryPage.addProductToCart(PRODUCTS.ONESIE);
+    const cartPage = await inventoryPage.goToCart();
     await use(cartPage);
   },
 });

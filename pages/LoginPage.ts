@@ -2,7 +2,11 @@ import { Page } from "@playwright/test";
 import { InventoryPage } from "./InventoryPage";
 
 export class LoginPage {
-  constructor(private page: Page) {}
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   async goto() {
     await this.page.goto("/");

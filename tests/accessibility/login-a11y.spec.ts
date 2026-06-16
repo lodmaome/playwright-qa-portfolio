@@ -4,13 +4,11 @@ import { waitForStableState } from "../../tests/utils/retry";
 
 test.describe("Login Accessibility", () => {
   test("should have no severe accessibility violations", async ({
-    page,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     loginPage,
   }, testInfo) => {
-    await waitForStableState(page);
+    await waitForStableState(loginPage.page);
 
-    const results = await new AxeBuilder({ page })
+    const results = await new AxeBuilder({ page: loginPage.page })
       .withTags(["wcag2a", "wcag2aa"])
       .analyze();
 

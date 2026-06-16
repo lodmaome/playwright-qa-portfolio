@@ -1,8 +1,6 @@
+import { env } from "../../config/env";
 import { expect, test } from "../../fixtures/api.fixture";
 import { login } from "./auth.api";
-
-// DummyJSON docs: POST /auth/login
-// https://dummyjson.com/docs/auth
 
 test.describe("Auth API", () => {
   test.describe("POST /login", () => {
@@ -15,8 +13,8 @@ test.describe("Auth API", () => {
     test("response contains expected user fields", async ({ request }) => {
       const response = await request.post("/auth/login", {
         data: {
-          username: "emilys",
-          password: "emilyspass",
+          username: env.api_username,
+          password: env.api_password,
         },
       });
 
@@ -45,7 +43,7 @@ test.describe("Auth API", () => {
     test("returns 400 on wrong password", async ({ request }) => {
       const response = await request.post("/auth/login", {
         data: {
-          username: "emilys",
+          username: env.api_username,
           password: "wrongpassword",
         },
       });
