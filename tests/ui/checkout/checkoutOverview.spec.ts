@@ -3,34 +3,37 @@ import { Messages } from "../../../constants/messages";
 import { PRODUCTS } from "../../../constants/products";
 import { expect, test } from "../../../fixtures";
 
-test("overview lists the item that was in the cart", async ({
+test("checkoutOverviewPage lists the item that was in the cart", async ({
   cartPageWithItem,
 }) => {
-  const checkoutInfo = await cartPageWithItem.goToCheckout();
-  const checkoutOverview = await checkoutInfo.completePersonalInformation(
-    CUSTOMER.firstName,
-    CUSTOMER.lastName,
-    CUSTOMER.postalCode,
-  );
+  const checkoutInfoPagePage = await cartPageWithItem.goToCheckout();
+  const checkoutcheckoutOverviewPagePage =
+    await checkoutInfoPagePage.completePersonalInformation(
+      CUSTOMER.firstName,
+      CUSTOMER.lastName,
+      CUSTOMER.postalCode,
+    );
 
-  await expect(checkoutOverview.products).toContainText([PRODUCTS.BIKE_LIGHT]);
+  await expect(checkoutcheckoutOverviewPagePage.products).toContainText([
+    PRODUCTS.BIKE_LIGHT,
+  ]);
 });
 
 test.describe("Page navigation", () => {
   test("should go back to inventory page when cancel button is clicked", async ({
     checkoutReady,
   }) => {
-    await test.step("complete checkout information form", async () => {
-      const checkoutOverviewPage =
-        await checkoutReady.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-      await test.step("cancel from overview and verify redirect", async () => {
-        const inventoryPage = await checkoutOverviewPage.cancelCheckout();
-        await expect(inventoryPage.title).toHaveText("Products");
-      });
+    const checkoutcheckoutOverviewPagePage =
+      await checkoutReady.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
+
+    await test.step("cancel from checkoutOverviewPage and verify redirect", async () => {
+      const inventoryPage =
+        await checkoutcheckoutOverviewPagePage.cancelCheckout();
+      await expect(inventoryPage.title).toHaveText("Products");
     });
   });
 
@@ -47,18 +50,17 @@ test.describe("Checkout money fields", () => {
   test("item total is a positive dollar amount", async ({
     cartPageWithItem,
   }) => {
-    const checkoutInfo = await cartPageWithItem.goToCheckout();
-    const overview = await checkoutInfo.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
-    );
+    const checkoutInfoPage = await cartPageWithItem.goToCheckout();
+    const checkoutcheckoutOverviewPagePage =
+      await checkoutInfoPage.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
 
-    const itemTotalText = await overview.page
-      .locator(".summary_subtotal_label")
-      .textContent();
+    const itemTotalText =
+      await checkoutcheckoutOverviewPagePage.itemTotal.textContent();
 
-    // Format: "Item total: $X.XX"
     const match = itemTotalText?.match(/\$(\d+\.\d{2})/);
     expect(match, "Item total label is missing a dollar amount").toBeTruthy();
 
@@ -67,18 +69,16 @@ test.describe("Checkout money fields", () => {
   });
 
   test("tax is a non-negative dollar amount", async ({ cartPageWithItem }) => {
-    const checkoutInfo = await cartPageWithItem.goToCheckout();
-    const overview = await checkoutInfo.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
-    );
+    const checkoutInfoPage = await cartPageWithItem.goToCheckout();
+    const checkoutOverviewPage =
+      await checkoutInfoPage.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
 
-    const taxText = await overview.page
-      .locator(".summary_tax_label")
-      .textContent();
+    const taxText = await checkoutOverviewPage.tax.textContent();
 
-    // Format: "Tax: $X.XX"
     const match = taxText?.match(/\$(\d+\.\d{2})/);
     expect(match, "Tax label is missing a dollar amount").toBeTruthy();
 
@@ -88,56 +88,64 @@ test.describe("Checkout money fields", () => {
 
   test("order total equals item total plus tax", async ({
     cartPageWithItem,
+    page,
   }) => {
-    const checkoutInfo = await cartPageWithItem.goToCheckout();
-    const overview = await checkoutInfo.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
+    const checkoutInfoPage = await cartPageWithItem.goToCheckout();
+    const checkoutOverviewPage =
+      await checkoutInfoPage.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
+
+    const itemTotal = parseFloat(
+      (await checkoutOverviewPage.itemTotal.innerText()).replace(
+        "Item total: $",
+        "",
+      ),
     );
 
-    const extract = async (selector: string): Promise<number> => {
-      const text = await overview.page.locator(selector).textContent();
-      const match = text?.match(/\$(\d+\.\d{2})/);
-      expect(match, `No dollar amount found in: ${text}`).toBeTruthy();
-      return parseFloat(match![1]);
-    };
+    const tax = parseFloat(
+      (await checkoutOverviewPage.tax.innerText()).replace("Tax: $", ""),
+    );
 
-    const itemTotal = await extract(".summary_subtotal_label");
-    const tax = await extract(".summary_tax_label");
-    const orderTotal = await extract(".summary_total_label");
+    const orderTotal = parseFloat(
+      (await checkoutOverviewPage.orderTotal.innerText()).replace(
+        "Total: $",
+        "",
+      ),
+    );
 
-    // Allow a 1-cent floating-point tolerance.
     expect(orderTotal).toBeCloseTo(itemTotal + tax, 2);
   });
 });
 
 test.describe("Payment and shipping information", () => {
   test("payment information label is present", async ({ cartPageWithItem }) => {
-    const checkoutInfo = await cartPageWithItem.goToCheckout();
-    const overview = await checkoutInfo.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
-    );
+    const checkoutInfoPage = await cartPageWithItem.goToCheckout();
+    const checkoutOverviewPage =
+      await checkoutInfoPage.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
 
-    // SauceDemo displays a dummy payment method string.
-    const paymentValue = overview.page.locator(".summary_value_label").first();
+    const paymentValue = checkoutOverviewPage.paymentInfo;
     await expect(paymentValue).not.toBeEmpty();
   });
 
   test("shipping information label is present", async ({
     cartPageWithItem,
   }) => {
-    const checkoutInfo = await cartPageWithItem.goToCheckout();
-    const overview = await checkoutInfo.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
-    );
+    const checkoutInfoPage = await cartPageWithItem.goToCheckout();
+    const checkoutOverviewPage =
+      await checkoutInfoPage.completePersonalInformation(
+        CUSTOMER.firstName,
+        CUSTOMER.lastName,
+        CUSTOMER.postalCode,
+      );
 
-    // Two .summary_value_label elements: [0] payment, [1] shipping.
-    const shippingValue = overview.page.locator(".summary_value_label").nth(1);
+    const shippingValue = checkoutOverviewPage.shippingInfo;
     await expect(shippingValue).not.toBeEmpty();
   });
 });

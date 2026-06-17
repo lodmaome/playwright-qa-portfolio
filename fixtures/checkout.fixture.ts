@@ -1,9 +1,7 @@
+import { CUSTOMER } from "../constants/customer";
+import { CheckoutCompletePage } from "../pages/CheckoutCompletePage";
+import { CheckoutInformationPage } from "../pages/CheckoutInformationPage";
 import { cartTest } from "./cart.fixture";
-
-import { CheckoutCompletePage } from "@/pages/CheckoutCompletePage";
-import { CheckoutInformationPage } from "@/pages/CheckoutInformationPage";
-
-import { CUSTOMER } from "@/constants/customer";
 
 type CheckoutFixtures = {
   checkoutReady: CheckoutInformationPage;

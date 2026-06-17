@@ -1,5 +1,5 @@
-import { Messages } from "@/constants/messages";
 import { CUSTOMER } from "../../../constants/customer";
+import { Messages } from "../../../constants/messages";
 import { expect, test } from "../../../fixtures";
 
 test("should receive error when first name is not provided", async ({

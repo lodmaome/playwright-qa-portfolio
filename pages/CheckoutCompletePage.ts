@@ -16,6 +16,14 @@ export class CheckoutCompletePage {
     return this.page.locator(".complete-header");
   }
 
+  get confirmationImage() {
+    return this.page.locator(".pony_express");
+  }
+
+  get completionText() {
+    return this.page.locator(".complete-text");
+  }
+
   async backHome(): Promise<InventoryPage> {
     await this.page.locator("#back-to-products").click();
     return new InventoryPage(this.page);

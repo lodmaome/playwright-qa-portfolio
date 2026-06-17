@@ -1,6 +1,5 @@
 import { APIRequestContext } from "@playwright/test";
 
-//authorization header, base requests
 export class ApiClient {
   constructor(
     private request: APIRequestContext,
@@ -24,7 +23,7 @@ export class ApiClient {
     });
   }
 
-    async put(url: string, data: unknown) {
+  async put(url: string, data: unknown) {
     return this.request.put(url, {
       data,
       headers: {

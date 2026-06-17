@@ -4,8 +4,8 @@ import "dotenv/config";
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0, // retry twice on CI to absorb transient failures
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 0 : 0, // retry twice on CI to absorb transient failures
+  workers: process.env.CI ? 4 : undefined,
   reporter: [
     ["html"],
     [
@@ -21,28 +21,47 @@ export default defineConfig({
   use: {
     baseURL: process.env.UI_BASE_URL,
     trace: "on-first-retry",
-    browserName: "chromium",
   },
 
   projects: [
     {
-      name: "login",
+      name: "ui-login",
       testDir: "tests/ui/login",
     },
     {
-      name: "setup",
+      name: "ui-setup",
       testDir: "tests/ui",
       testMatch: "**/auth.setup.ts",
     },
     {
-      name: "e2e",
+      name: "ui-e2e-chromium",
       testDir: "tests/ui",
-      dependencies: ["setup"],
+      dependencies: ["ui-setup"],
       use: {
         ...devices["Desktop Chrome"],
         storageState: ".auth/login.json",
       },
-      testIgnore: ["**/ui/login/*.spec.ts"],
+      testIgnore: ["**/ui/login/*.spec.ts", "**/*-visual.spec.ts"],
+    },
+    {
+      name: "ui-e2e-firefox",
+      testDir: "tests/ui",
+      dependencies: ["ui-setup"],
+      use: {
+        ...devices["Desktop Firefox"],
+        storageState: ".auth/login.json",
+      },
+      testIgnore: ["**/ui/login/*.spec.ts", "**/*-visual.spec.ts"],
+    },
+    {
+      name: "ui-e2e-webkit",
+      testDir: "tests/ui",
+      dependencies: ["ui-setup"],
+      use: {
+        ...devices["Desktop Safari"],
+        storageState: ".auth/login.json",
+      },
+      testIgnore: ["**/ui/login/*.spec.ts", "**/*-visual.spec.ts"],
     },
     {
       name: "api",
@@ -57,15 +76,16 @@ export default defineConfig({
     {
       name: "accessibility-authenticated",
       testDir: "tests/accessibility/authenticated",
-      dependencies: ["setup"],
+      dependencies: ["ui-setup"],
       use: {
         storageState: ".auth/login.json",
       },
     },
     {
       name: "visual",
-      testDir: "tests/ui/authenticated",
-      dependencies: ["setup"],
+      testDir: "tests/ui",
+      testMatch: "**/*-visual.spec.ts",
+      dependencies: ["ui-setup"],
       use: {
         storageState: ".auth/login.json",
       },

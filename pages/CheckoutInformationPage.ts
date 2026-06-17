@@ -3,7 +3,11 @@ import { CartPage } from "./CartPage";
 import { CheckoutOverviewPage } from "./CheckoutOverviewPage";
 
 export class CheckoutInformationPage {
-  constructor(private page: Page) {}
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   get title() {
     return this.page.locator(".title");

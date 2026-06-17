@@ -55,7 +55,6 @@ test.describe("Products API", () => {
       const { products } = await response.json();
       expect(products.length).toBeGreaterThan(0);
 
-      // Every result should be relevant to the query
       for (const product of products) {
         const isRelevant =
           product.title.toLowerCase().includes("phone") ||
@@ -94,7 +93,7 @@ test.describe("Products API", () => {
       expect(response.status()).toBe(404);
 
       const body = await response.json();
-      expect(body).toHaveProperty("message");
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
 
     test("price is a positive number", async ({ authApi }) => {
@@ -172,11 +171,10 @@ test.describe("Products API", () => {
       authApi,
     }) => {
       const response = await authApi.post("/products/add", {});
+      expect(response.status()).toBe(201);
 
-      // DummyJSON is lenient; assert at minimum the response has an id (simulated)
-      // or a 400 — document the actual behaviour here
-      const status = response.status();
-      expect([201, 400]).toContain(status);
+      const body = await response.json();
+      expect(body).toHaveProperty("id");
     });
   });
 
@@ -211,7 +209,6 @@ test.describe("Products API", () => {
 
       const body = await response.json();
       expect(body.price).toBe(patch.price);
-      // Other fields should still be present
       expect(body).toHaveProperty("title");
       expect(body).toHaveProperty("stock");
     });
@@ -235,6 +232,9 @@ test.describe("Products API", () => {
       const response = await authApi.delete("/products/999999");
 
       expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
 });

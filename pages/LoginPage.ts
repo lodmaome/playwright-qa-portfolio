@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { InventoryPage } from "./InventoryPage";
 
 export class LoginPage {
@@ -12,12 +12,21 @@ export class LoginPage {
     await this.page.goto("/");
   }
 
-  async login(username: string, password: string) {
+  async login(username: string, password: string): Promise<InventoryPage> {
+    this.goto();
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
 
+    await expect(this.page).toHaveURL(/inventory/);
+
     return new InventoryPage(this.page);
+  }
+
+  async attemptLogin(username: string, password: string): Promise<void> {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
   }
 
   get usernameInput() {
@@ -38,13 +47,5 @@ export class LoginPage {
 
   get title() {
     return this.page.locator(".title");
-  }
-
-  async pressTab() {
-    await this.page.keyboard.press("Tab");
-  }
-
-  async pressEnter() {
-    await this.page.keyboard.press("Enter");
   }
 }

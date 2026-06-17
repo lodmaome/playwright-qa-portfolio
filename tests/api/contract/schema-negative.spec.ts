@@ -216,7 +216,7 @@ test.describe("UserSchema — rejects malformed payloads", () => {
 
   INVALID_USER_SCENARIOS.forEach(({ label, key, value }) => {
     test(`rejects when ${label}`, () => {
-      const result = ProductSchema.safeParse({
+      const result = UserSchema.safeParse({
         ...validUser,
         [key]: value,
       });

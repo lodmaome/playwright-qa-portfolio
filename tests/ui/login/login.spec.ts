@@ -1,13 +1,14 @@
 import { env } from "../../../config/env";
 import { Messages } from "../../../constants/messages";
-import { expect, test } from "../../../fixtures/login.fixture";
+import { expect, loginTest } from "../../../fixtures";
 
-test("should log in successfully with valid credentials", async ({
-  loginPage,
-}) => {
-  const inventoryPage = await loginPage.login(env.username, env.password);
-  await inventoryPage.assertLoaded();
-});
+loginTest(
+  "Should log in successfully with valid credentials",
+  async ({ loginPage }) => {
+    const inventoryPage = await loginPage.login(env.username, env.password);
+    await inventoryPage.assertLoaded();
+  },
+);
 
 const invalidLoginScenarios = [
   {
@@ -37,8 +38,12 @@ const invalidLoginScenarios = [
 ];
 
 for (const scenario of invalidLoginScenarios) {
-  test(`login fails with ${scenario.description}`, async ({ loginPage }) => {
-    await loginPage.login(scenario.username, scenario.password);
-    await expect(loginPage.errorMessage).toHaveText(scenario.expectedError);
-  });
+  loginTest(
+    `login fails with ${scenario.description}`,
+    async ({ loginPage }) => {
+      await loginPage.attemptLogin(scenario.username, scenario.password);
+      await expect(loginPage.errorMessage).toBeVisible();
+      await expect(loginPage.errorMessage).toHaveText(scenario.expectedError);
+    },
+  );
 }

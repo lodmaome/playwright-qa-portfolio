@@ -28,9 +28,7 @@ export async function withRetry<T>(
     } catch (error) {
       lastError = error as Error;
       if (attempt < maxRetries) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, delayMs * attempt),
-        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs * attempt));
       }
     }
   }
@@ -40,10 +38,9 @@ export async function withRetry<T>(
 
 /**
  * Waits for network activity to settle before taking snapshot assertions.
- * Prevents flakiness in visual regression tests caused by in-flight requests
- * that may still be updating the DOM when the screenshot is captured.
+ * Prevents flakiness in visual regression tests.
  */
 export async function waitForStableState(page: Page): Promise<void> {
-  await page.waitForLoadState("networkidle");
   await page.waitForLoadState("domcontentloaded");
+  await page.waitForLoadState("networkidle");
 }

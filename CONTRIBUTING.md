@@ -31,6 +31,13 @@ This means:
 
 Do **not** add login logic to fixtures or `beforeEach` hooks in spec files.
 
+### Session expiry
+
+`storageState` is generated once per run.  If a very long run causes the
+SauceDemo session to expire mid-suite, authenticated tests will fail with
+redirect errors.  Re-running the suite generates a fresh token via the
+`setup` project.
+
 ## Base URLs
 
 | Project | URL source |
@@ -41,6 +48,17 @@ Do **not** add login logic to fixtures or `beforeEach` hooks in spec files.
 
 All environment variables are validated at startup in `config/env.ts`.
 Copy `.env.example` to `.env` and fill in every value before running the suite.
+
+## Environment-specific configuration
+
+For staging vs production, duplicate `.env` as `.env.staging` /
+`.env.production` and run:
+
+```bash
+dotenv --path .env.staging npx playwright test
+```
+
+Or export the variables directly in CI (see `.github/workflows/playwright.yml`).
 
 ## Adding a UI test
 
@@ -57,6 +75,30 @@ Copy `.env.example` to `.env` and fill in every value before running the suite.
    npx playwright test --project=e2e
    ```
 
+### Canonical fixture import paths
+
+Always import from the fixture file that owns the fixture you need:
+
+| Fixture(s) | Import path |
+|---|---|
+| `loginPage` | `../../fixtures/login.fixture` |
+| `inventoryPage`, `inventoryPageWithItem` | `../../fixtures` (re-exported from `inventory.fixture`) |
+| `cartPage`, `cartPageWithItem`, etc. | `../../fixtures` (re-exported as `cartTest`) |
+| `checkoutReady`, `completedCheckout` | `../../fixtures` (default `test` export) |
+| `authApi` | `../../fixtures/api.fixture` |
+
+`fixtures/index.ts` re-exports everything so most specs can use a single import:
+
+```ts
+import { test, expect } from "../../../fixtures";
+```
+
+For visual specs that need cart-level fixtures, use the named re-export:
+
+```ts
+import { cartTest as test, expect } from "../../../fixtures";
+```
+
 ## Adding an API test
 
 1. Put the spec in `tests/api/`.
@@ -64,11 +106,15 @@ Copy `.env.example` to `.env` and fill in every value before running the suite.
    requests; use the raw `request` fixture for unauthenticated ones.
 3. Add or update the Zod schema in `tests/api/schemas/` when you are testing
    a new resource type.  The schema is the contract; assertions follow from it.
+4. **Always validate error response bodies**, not just status codes.  A 404
+   should also assert `expect(body).toMatchObject({ message: expect.any(String) })`.
 
 ## Visual regression tests
 
 Visual specs live alongside the feature they cover and are named
 `*-visual.spec.ts`.  Baseline snapshots are committed to the repository.
+The `visual` project in `playwright.config.ts` picks up **all** `*-visual.spec.ts`
+files under `tests/ui/` — login, cart, checkout, and inventory are all covered.
 
 Regenerate baselines only after an intentional UI change:
 ```bash
@@ -106,3 +152,21 @@ test starts passing.  Reserve it for intentional regression guards, not for
 | Page Objects | `FeaturePage.ts` |
 | Fixtures | `feature.fixture.ts` |
 | Zod schemas | `resource.schema.ts` |
+
+## Page Object conventions
+
+All Page Object constructors use the explicit `readonly page: Page` pattern:
+
+```ts
+export class MyPage {
+  readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
+}
+```
+
+Do **not** use the TypeScript private-shorthand constructor (`constructor(private page: Page)`);
+it is inconsistent with the rest of the codebase and harder to read for reviewers
+unfamiliar with the shorthand.

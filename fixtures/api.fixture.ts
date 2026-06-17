@@ -1,6 +1,6 @@
 import { test as base, expect } from "@playwright/test";
-import { login } from "../tests/api/auth.api";
 import { ApiClient } from "../tests/api/apiClient";
+import { login } from "../tests/api/auth.api";
 
 type ApiFixtures = {
   authApi: ApiClient;

@@ -11,13 +11,12 @@ test.describe("UI elements checkout page", () => {
   test("shows the pony-express dispatch image", async ({
     completedCheckout,
   }) => {
-    // Visual confirmation that the confirmation illustration rendered.
-    const image = completedCheckout.page.locator(".pony_express");
+    const image = completedCheckout.confirmationImage;
     await expect(image).toBeVisible();
   });
 
   test("shows the completion sub-text", async ({ completedCheckout }) => {
-    const subHeader = completedCheckout.page.locator(".complete-text");
+    const subHeader = completedCheckout.completionText;
     await expect(subHeader).toHaveText(
       "Your order has been dispatched, and will arrive just as fast as the pony can get there!",
     );
@@ -33,8 +32,7 @@ test("back-home button returns to the inventory page", async ({
 
 test("cart badge is cleared after a completed order", async ({
   completedCheckout,
-  page,
 }) => {
-  await completedCheckout.backHome();
-  await expect(page.locator(".shopping_cart_badge")).toBeHidden();
+  const inventoryPage = await completedCheckout.backHome();
+  await expect(inventoryPage.cartBadge).toBeHidden();
 });

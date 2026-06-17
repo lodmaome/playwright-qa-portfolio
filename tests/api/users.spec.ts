@@ -1,5 +1,5 @@
 import z from "zod";
-import { test, expect } from "../../fixtures/api.fixture";
+import { expect, test } from "../../fixtures/api.fixture";
 import { UserListSchema, UserSchema } from "./schemas/user.schema";
 
 // DummyJSON docs: /docs/users

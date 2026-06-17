@@ -1,6 +1,4 @@
-import { test, expect } from "../../fixtures/api.fixture";
-
-// DummyJSON docs: /docs/carts
+import { expect, test } from "../../fixtures/api.fixture";
 
 test.describe("Carts API", () => {
   test.describe("GET /carts", () => {
@@ -91,11 +89,16 @@ test.describe("Carts API", () => {
       const response = await authApi.get("/carts/999999");
 
       expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
 
   test.describe("POST /carts/add", () => {
-    test("creates a new cart and returns it with an id", async ({ authApi }) => {
+    test("creates a new cart and returns it with an id", async ({
+      authApi,
+    }) => {
       const newCart = {
         userId: 1,
         products: [
@@ -161,7 +164,10 @@ test.describe("Carts API", () => {
   });
 
   test.describe("DELETE /carts/:id", () => {
-    test("deletes a cart and returns the deleted record", async ({ authApi }) => {
+    test("deletes a cart and returns the deleted record", async ({
+      authApi,
+    }) => {
+      // DummyJSON is stateless — this call does not actually remove cart 1.
       const response = await authApi.delete("/carts/1");
 
       expect(response.status()).toBe(200);
@@ -176,6 +182,9 @@ test.describe("Carts API", () => {
       const response = await authApi.delete("/carts/999999");
 
       expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
 });

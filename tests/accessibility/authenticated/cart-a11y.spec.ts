@@ -1,6 +1,6 @@
-import { waitForStableState } from "@/tests/utils/retry";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
+import { waitForStableState } from "../../../tests/utils/retry";
 
 test.describe("Cart Accessibility", () => {
   test("cart page with items has no critical violations", async ({

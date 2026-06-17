@@ -1,4 +1,4 @@
-import { PRODUCTS } from "@/constants/products";
+import { PRODUCTS } from "../constants/products";
 import { CartPage } from "../pages/CartPage";
 import { inventoryTest } from "./inventory.fixture";
 

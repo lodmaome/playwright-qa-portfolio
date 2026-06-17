@@ -2,7 +2,7 @@
 
 [![Playwright Tests](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml/badge.svg)](https://github.com/lodmaome/playwright-qa-portfolio/actions/workflows/playwright.yml)
 [![Allure Report](https://img.shields.io/badge/allure-2.1.0-blue)](https://allure-framework.com)
-[![Playwright](https://img.shields.io/badge/playwright-1.60.0-blue)](https://playwright.dev)
+[![Playwright](https://img.shields.io/badge/playwright-%5E1.60.0-blue)](https://playwright.dev)
 
 ## Introduction
 
@@ -30,7 +30,9 @@ like a user story: `const checkout = await cart.goToCheckout()`.
 status codes. If the API adds a required field or changes a type, the schema
 test fails before any UI test sees the breakage. The schemas in
 `tests/api/schemas/` are the canonical documentation of what the API is
-expected to return.
+expected to return.  Error response bodies are also schema-validated (not just
+the status code), so a change from `{ message }` to `{ error }` is caught
+immediately.
 
 **Two base URLs, one config** — UI projects inherit `UI_BASE_URL` from the
 global `use.baseURL`. The `api` project overrides `baseURL` with
@@ -73,3 +75,24 @@ npx playwright test --project=visual --update-snapshots  # refresh baselines
 npx playwright show-report    # built-in HTML report
 npm run report:allure         # Allure report (richer history + trends)
 ```
+
+## Environment strategy
+
+A single `.env` file covers local development.  For staging vs production,
+duplicate the file as `.env.staging` / `.env.production` and pass it via
+`dotenv --path .env.staging npx playwright test`, or export the variables in
+your CI environment (see `.github/workflows/playwright.yml`).  The
+`config/env.ts` helper validates all required variables at startup and prints
+a descriptive error for any that are missing.
+
+## Known limitations
+
+- **LCP performance test** — `PerformanceObserver` inside `page.evaluate()` is
+  sensitive to headless rendering speed and CI container CPU.  The test is
+  marked with an explanatory comment; consider skipping it on CI if it proves
+  flaky (`test.skip(!!process.env.CI, "...")`).
+- **Session expiry** — `storageState` is written once per run by the `setup`
+  project.  If a long test run causes the session to expire mid-suite,
+  authenticated tests will fail with 401-style redirects.  Re-running the
+  suite regenerates the token.  A future improvement would be a `teardown`
+  project that refreshes the token if needed.

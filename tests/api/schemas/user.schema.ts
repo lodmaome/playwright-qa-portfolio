@@ -19,4 +19,4 @@ export const UserListSchema = z.object({
   limit: z.number().int().positive(),
 });
 
-export type Product = z.infer<typeof UserSchema>;
+export type User = z.infer<typeof UserSchema>;
