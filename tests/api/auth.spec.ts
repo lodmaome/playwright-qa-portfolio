@@ -1,9 +1,17 @@
 import { env } from "../../config/env";
 import { expect, test } from "../../fixtures/api.fixture";
+import { setAllureMeta } from "../../tests/utils/allure";
 import { login } from "./auth.api";
 
 test.describe("Auth API", () => {
-  test.describe("POST /login", () => {
+  test.describe("POST /auth/login", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Authentication",
+        story: "Login",
+      });
+    });
+
     test("returns a token on valid credentials", async ({ request }) => {
       const token = await login(request);
       expect(typeof token).toBe("string");
@@ -67,6 +75,13 @@ test.describe("Auth API", () => {
   });
 
   test.describe("GET /auth/me", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Authentication",
+        story: "Current User Profile",
+      });
+    });
+
     test("returns the authenticated user's profile", async ({ authApi }) => {
       const response = await authApi.get("/auth/me");
 

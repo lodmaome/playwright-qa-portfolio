@@ -3,19 +3,29 @@ import { setAllureMeta } from "../../../tests/utils/allure";
 import { waitForStableState } from "../../../tests/utils/retry";
 
 loginTest.describe("Login Visual", () => {
-  loginTest("succesfull login snapshot", async ({ loginPage }) => {
-    setAllureMeta.story("Successful Login");
-    setAllureMeta.tags("visual-regression");
-
-    await waitForStableState(loginPage.page);
-    await expect(loginPage.page).toHaveScreenshot("login-page.png");
+  loginTest.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Authentication",
+      story: "Visual Regression",
+      layer: "visual",
+      tags: ["login", "visual-regression"],
+    });
   });
 
   loginTest(
-    "show error for invalid credentials snapshot",
+    "matches the baseline snapshot of the login page",
     async ({ loginPage }) => {
-      setAllureMeta.story("Failed Login");
-      setAllureMeta.tags("visual-regression");
+      setAllureMeta.story("Login Page Baseline");
+
+      await waitForStableState(loginPage.page);
+      await expect(loginPage.page).toHaveScreenshot("login-page.png");
+    },
+  );
+
+  loginTest(
+    "matches the baseline snapshot after an invalid credentials attempt",
+    async ({ loginPage }) => {
+      setAllureMeta.story("Failed Login State");
 
       await loginPage.attemptLogin("invalid", "invalid");
 

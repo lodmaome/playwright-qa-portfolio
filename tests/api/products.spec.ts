@@ -1,9 +1,17 @@
 import z from "zod";
 import { expect, test } from "../../fixtures/api.fixture";
+import { setAllureMeta } from "../../tests/utils/allure";
 import { ProductListSchema, ProductSchema } from "./schemas/product.schema";
 
 test.describe("Products API", () => {
   test.describe("GET /products", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "List Products",
+      });
+    });
+
     test("returns a paginated list of products", async ({ authApi }) => {
       const response = await authApi.get("/products");
 
@@ -19,7 +27,7 @@ test.describe("Products API", () => {
       expect(body.products.length).toBeGreaterThan(0);
     });
 
-    test("each product has the expected schema", async ({ authApi }) => {
+    test("each product matches the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/products?limit=5");
       const body = await response.json();
 
@@ -47,7 +55,9 @@ test.describe("Products API", () => {
       expect(body.limit).toBe(5);
     });
 
-    test("supports searching by product name", async ({ authApi }) => {
+    test("returns matching results when searching by product name", async ({
+      authApi,
+    }) => {
       const response = await authApi.get("/products/search?q=phone");
 
       expect(response.status()).toBe(200);
@@ -64,7 +74,9 @@ test.describe("Products API", () => {
       }
     });
 
-    test("returns empty array for unmatched search", async ({ authApi }) => {
+    test("returns an empty array for an unmatched search query", async ({
+      authApi,
+    }) => {
       const response = await authApi.get(
         "/products/search?q=zzznomatchproduct",
       );
@@ -76,6 +88,13 @@ test.describe("Products API", () => {
   });
 
   test.describe("GET /products/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Get Product by ID",
+      });
+    });
+
     test("returns a single product by id", async ({ authApi }) => {
       const response = await authApi.get("/products/1");
 
@@ -120,7 +139,14 @@ test.describe("Products API", () => {
   });
 
   test.describe("GET /products/categories", () => {
-    test("returns a list of categories", async ({ authApi }) => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Product Categories",
+      });
+    });
+
+    test("returns a non-empty list of categories", async ({ authApi }) => {
       const response = await authApi.get("/products/categories");
 
       expect(response.status()).toBe(200);
@@ -130,7 +156,9 @@ test.describe("Products API", () => {
       expect(body.length).toBeGreaterThan(0);
     });
 
-    test("filters products by category", async ({ authApi }) => {
+    test("returns only products belonging to the requested category", async ({
+      authApi,
+    }) => {
       const response = await authApi.get("/products/category/smartphones");
 
       expect(response.status()).toBe(200);
@@ -145,6 +173,13 @@ test.describe("Products API", () => {
   });
 
   test.describe("POST /products/add", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Create Product",
+      });
+    });
+
     test("creates a new product and returns it with an id", async ({
       authApi,
     }) => {
@@ -179,7 +214,14 @@ test.describe("Products API", () => {
   });
 
   test.describe("PUT /products/:id", () => {
-    test("replaces a product's data and reflects the update", async ({
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Replace Product",
+      });
+    });
+
+    test("replaces a product's data and reflects the update in the response", async ({
       authApi,
     }) => {
       const updated = {
@@ -198,6 +240,13 @@ test.describe("Products API", () => {
   });
 
   test.describe("PATCH /products/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Update Product",
+      });
+    });
+
     test("partially updates a product and returns the merged result", async ({
       authApi,
     }) => {
@@ -215,6 +264,13 @@ test.describe("Products API", () => {
   });
 
   test.describe("DELETE /products/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Delete Product",
+      });
+    });
+
     test("deletes a product and returns the deleted record", async ({
       authApi,
     }) => {
@@ -237,21 +293,33 @@ test.describe("Products API", () => {
       expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
-});
 
-test("products endpoint average response time", async ({ request }) => {
-  const times: number[] = [];
+  test.describe("Performance", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Products",
+        story: "Response Time",
+        tags: ["performance"],
+      });
+    });
 
-  await test.step("collect 5 response time samples", async () => {
-    for (let i = 0; i < 5; i++) {
-      const start = Date.now();
-      await request.get("products");
-      times.push(Date.now() - start);
-    }
-  });
+    test("average response time across 5 samples is under 800 ms", async ({
+      request,
+    }) => {
+      const times: number[] = [];
 
-  await test.step("assert average is under 800ms", async () => {
-    const average = times.reduce((a, b) => a + b) / times.length;
-    expect(average).toBeLessThan(800);
+      await test.step("collect 5 response time samples", async () => {
+        for (let i = 0; i < 5; i++) {
+          const start = Date.now();
+          await request.get("products");
+          times.push(Date.now() - start);
+        }
+      });
+
+      await test.step("assert average is under 800ms", async () => {
+        const average = times.reduce((a, b) => a + b) / times.length;
+        expect(average).toBeLessThan(800);
+      });
+    });
   });
 });

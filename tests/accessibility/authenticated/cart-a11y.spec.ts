@@ -1,9 +1,20 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
+import { setAllureMeta } from "../../../tests/utils/allure";
 import { waitForStableState } from "../../../tests/utils/retry";
 
 test.describe("Cart Accessibility", () => {
-  test("cart page with items has no critical violations", async ({
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Shopping Cart",
+      story: "Cart Accessibility",
+      layer: "accessibility",
+      severity: "critical",
+      tags: ["cart", "a11y", "wcag2aa"],
+    });
+  });
+
+  test("has no serious or critical WCAG 2.1 AA violations", async ({
     cartPageWithItem,
   }, testInfo) => {
     await waitForStableState(cartPageWithItem.page);

@@ -1,37 +1,54 @@
 import { env } from "../../config/env";
 import { expect, test } from "../../fixtures/login.fixture";
 import { InventoryPage } from "../../pages/InventoryPage";
+import { setAllureMeta } from "../../tests/utils/allure";
 
-test("login form can be navigated with keyboard", async ({ loginPage }) => {
-  await loginPage.page.keyboard.press("Tab");
-  await expect(loginPage.usernameInput).toBeFocused();
+test.describe("Keyboard Navigation", () => {
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Authentication",
+      story: "Keyboard Navigation",
+      layer: "accessibility",
+      severity: "critical",
+      tags: ["login", "a11y", "keyboard", "wcag2aa"],
+    });
+  });
 
-  await loginPage.page.keyboard.press("Tab");
-  await expect(loginPage.passwordInput).toBeFocused();
+  test("moves focus through the login form fields in tab order", async ({
+    loginPage,
+  }) => {
+    await loginPage.page.keyboard.press("Tab");
+    await expect(loginPage.usernameInput).toBeFocused();
 
-  await loginPage.page.keyboard.press("Tab");
-  await expect(loginPage.loginButton).toBeFocused();
-});
+    await loginPage.page.keyboard.press("Tab");
+    await expect(loginPage.passwordInput).toBeFocused();
 
-test("user can login using keyboard only", async ({ loginPage }) => {
-  await loginPage.page.keyboard.press("Tab");
-  await loginPage.page.keyboard.type(env.username);
+    await loginPage.page.keyboard.press("Tab");
+    await expect(loginPage.loginButton).toBeFocused();
+  });
 
-  await loginPage.page.keyboard.press("Tab");
-  await loginPage.page.keyboard.type(env.password);
+  test("logs in successfully using the keyboard only", async ({
+    loginPage,
+  }) => {
+    await loginPage.page.keyboard.press("Tab");
+    await loginPage.page.keyboard.type(env.username);
 
-  await loginPage.page.keyboard.press("Tab");
-  await loginPage.page.keyboard.press("Enter");
+    await loginPage.page.keyboard.press("Tab");
+    await loginPage.page.keyboard.type(env.password);
 
-  await new InventoryPage(loginPage.page).assertLoaded();
-});
+    await loginPage.page.keyboard.press("Tab");
+    await loginPage.page.keyboard.press("Enter");
 
-// SauceDemo accessibility bug: after a failed login attempt
-// browser focus stays at login button
-// instead of moving to the error message container.
-test.skip("should focus on error message after invalid credentials", async ({
-  loginPage,
-}) => {
-  await loginPage.attemptLogin(env.username, "test123");
-  await expect(loginPage.errorMessage).toBeFocused();
+    await new InventoryPage(loginPage.page).assertLoaded();
+  });
+
+  // SauceDemo accessibility bug: after a failed login attempt
+  // browser focus stays at login button
+  // instead of moving to the error message container.
+  test.skip("moves focus to the error message after invalid credentials are submitted", async ({
+    loginPage,
+  }) => {
+    await loginPage.attemptLogin(env.username, "test123");
+    await expect(loginPage.errorMessage).toBeFocused();
+  });
 });

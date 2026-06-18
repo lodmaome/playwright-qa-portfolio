@@ -6,10 +6,21 @@
  */
 
 import { expect, test } from "../../../fixtures/api.fixture";
+import { setAllureMeta } from "../../../tests/utils/allure";
 import { ProductSchema } from "../schemas/product.schema";
 
-test.describe("Product API — contract boundary tests", () => {
-  test("price is never negative in any product", async ({ authApi }) => {
+test.describe("Products API — Contract Boundary Tests", () => {
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Products",
+      story: "Contract Boundary Validation",
+      tags: ["contract", "data-integrity"],
+    });
+  });
+
+  test("price is never negative across the full product catalog", async ({
+    authApi,
+  }) => {
     const response = await authApi.get("/products?limit=100");
     const { products } = await response.json();
     for (const product of products) {
@@ -21,7 +32,7 @@ test.describe("Product API — contract boundary tests", () => {
     }
   });
 
-  test("rating is within valid range across all products", async ({
+  test("rating is within the valid 0–5 range across the full product catalog", async ({
     authApi,
   }) => {
     const response = await authApi.get("/products?limit=100");

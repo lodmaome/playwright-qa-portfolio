@@ -1,20 +1,3 @@
-/**
- * allure.ts — thin wrappers around allure-playwright's label API.
- *
- * Why this file exists:
- *   - Keeps the raw `allure` import in one place. If allure-playwright ever
- *     changes its import path, you update one line instead of every fixture.
- *   - Provides typed helpers that surface IDE autocomplete for Severity, Layer,
- *     and the label keys used across the suite.
- *   - Calling these in a fixture body attaches the metadata to every test
- *     that consumes that fixture — no per-spec repetition needed.
- *
- * Usage (inside any fixture):
- *   import { setAllureMeta } from "../tests/utils/allure";
- *   setAllureMeta.feature("Cart");
- *   setAllureMeta.severity("critical");
- */
-
 import * as allure from "allure-js-commons";
 
 export type Severity = "blocker" | "critical" | "normal" | "minor" | "trivial";

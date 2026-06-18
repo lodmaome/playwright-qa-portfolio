@@ -7,6 +7,15 @@ jobs:
   update-snapshots:
     runs-on: ubuntu-latest
 
+    env:
+      UI_BASE_URL: ${{ secrets.UI_BASE_URL }}
+      STANDARD_USERNAME: ${{ secrets.STANDARD_USERNAME }}
+      LOCKED_USERNAME: ${{ secrets.LOCKED_USERNAME }}
+      STANDARD_PASSWORD: ${{ secrets.STANDARD_PASSWORD }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}
+      API_USERNAME: ${{ secrets.API_USERNAME }}
+      API_PASSWORD: ${{ secrets.API_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
 

@@ -1,9 +1,20 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../fixtures/login.fixture";
+import { setAllureMeta } from "../../tests/utils/allure";
 import { waitForStableState } from "../../tests/utils/retry";
 
 test.describe("Login Accessibility", () => {
-  test("should have no severe accessibility violations", async ({
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Authentication",
+      story: "Login Accessibility",
+      layer: "accessibility",
+      severity: "critical",
+      tags: ["login", "a11y", "wcag2aa"],
+    });
+  });
+
+  test("has no serious or critical WCAG 2.1 AA violations", async ({
     loginPage,
   }, testInfo) => {
     await waitForStableState(loginPage.page);

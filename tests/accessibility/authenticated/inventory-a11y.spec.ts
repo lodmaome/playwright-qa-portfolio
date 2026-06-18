@@ -1,16 +1,27 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
+import { setAllureMeta } from "../../../tests/utils/allure";
 import { waitForStableState } from "../../../tests/utils/retry";
 
 test.describe("Inventory Accessibility", () => {
-  test("inventory page has no critical accessibility violations", async ({
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Product Catalog",
+      story: "Inventory Accessibility",
+      layer: "accessibility",
+      severity: "critical",
+      tags: ["inventory", "a11y", "wcag2aa"],
+    });
+  });
+
+  test("has no serious or critical WCAG 2.1 AA violations", async ({
     inventoryPage,
   }, testInfo) => {
     await waitForStableState(inventoryPage.page);
 
     const results = await new AxeBuilder({ page: inventoryPage.page })
       .withTags(["wcag2a", "wcag2aa"])
-      .exclude(".product_sort_container") // third-party app violation, not under our control
+      .exclude(".product_sort_container") // third-party app violation
       .analyze();
 
     const criticalIssues = results.violations.filter((v) =>
@@ -29,7 +40,9 @@ test.describe("Inventory Accessibility", () => {
     ).toHaveLength(0);
   });
 
-  test("all product images have alt text", async ({ inventoryPage }) => {
+  test("all product images have non-empty alt text", async ({
+    inventoryPage,
+  }) => {
     const images = inventoryPage.page.locator(".inventory_item img");
     const count = await images.count();
 

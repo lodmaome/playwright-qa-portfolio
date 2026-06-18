@@ -1,11 +1,17 @@
 import z from "zod";
 import { expect, test } from "../../fixtures/api.fixture";
+import { setAllureMeta } from "../../tests/utils/allure";
 import { UserListSchema, UserSchema } from "./schemas/user.schema";
-
-// DummyJSON docs: /docs/users
 
 test.describe("Users API", () => {
   test.describe("GET /users", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "List Users",
+      });
+    });
+
     test("returns a paginated list of users", async ({ authApi }) => {
       const response = await authApi.get("/users");
 
@@ -21,7 +27,7 @@ test.describe("Users API", () => {
       expect(body.users.length).toBeGreaterThan(0);
     });
 
-    test("each user has the expected schema", async ({ authApi }) => {
+    test("each user matches the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/users?limit=5");
       const body = await response.json();
 
@@ -38,7 +44,7 @@ test.describe("Users API", () => {
       }
     });
 
-    test("supports limit and skip pagination", async ({ authApi }) => {
+    test("supports limit and skip pagination params", async ({ authApi }) => {
       const response = await authApi.get("/users?limit=3&skip=5");
 
       expect(response.status()).toBe(200);
@@ -49,7 +55,9 @@ test.describe("Users API", () => {
       expect(body.limit).toBe(3);
     });
 
-    test("supports filtering by key/value", async ({ authApi }) => {
+    test("returns only users matching the requested gender filter", async ({
+      authApi,
+    }) => {
       const response = await authApi.get(
         "/users/filter?key=gender&value=female",
       );
@@ -64,7 +72,9 @@ test.describe("Users API", () => {
       }
     });
 
-    test("supports searching users by name", async ({ authApi }) => {
+    test("returns users whose name matches the search query", async ({
+      authApi,
+    }) => {
       const response = await authApi.get("/users/search?q=Emily");
 
       expect(response.status()).toBe(200);
@@ -80,6 +90,13 @@ test.describe("Users API", () => {
   });
 
   test.describe("GET /users/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "Get User by ID",
+      });
+    });
+
     test("returns a single user by id", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
 
@@ -91,7 +108,7 @@ test.describe("Users API", () => {
       expect(body).toHaveProperty("email");
     });
 
-    test("email is a valid format", async ({ authApi }) => {
+    test("email is in a valid format", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
       const body = await response.json();
 
@@ -106,7 +123,7 @@ test.describe("Users API", () => {
       expect(Number.isInteger(body.age)).toBe(true);
     });
 
-    test("role is one of the expected values", async ({ authApi }) => {
+    test("role is one of the expected enum values", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
       const body = await response.json();
 
@@ -124,7 +141,16 @@ test.describe("Users API", () => {
   });
 
   test.describe("GET /users/:id/posts", () => {
-    test("returns posts for a specific user", async ({ authApi }) => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "User Posts",
+      });
+    });
+
+    test("returns posts belonging to the requested user", async ({
+      authApi,
+    }) => {
       const response = await authApi.get("/users/1/posts");
 
       expect(response.status()).toBe(200);
@@ -139,7 +165,16 @@ test.describe("Users API", () => {
   });
 
   test.describe("GET /users/:id/carts", () => {
-    test("returns carts for a specific user", async ({ authApi }) => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "User Carts",
+      });
+    });
+
+    test("returns carts belonging to the requested user", async ({
+      authApi,
+    }) => {
       const response = await authApi.get("/users/1/carts");
 
       expect(response.status()).toBe(200);
@@ -154,6 +189,13 @@ test.describe("Users API", () => {
   });
 
   test.describe("POST /users/add", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "Create User",
+      });
+    });
+
     test("creates a new user and returns it with an id", async ({
       authApi,
     }) => {
@@ -177,28 +219,17 @@ test.describe("Users API", () => {
       expect(body.firstName).toBe(newUser.firstName);
       expect(body.email).toBe(newUser.email);
     });
-
-    //it does return the password ☺
-    // test("does not return the password in the response", async ({
-    //   authApi,
-    // }) => {
-    //   const newUser = {
-    //     firstName: "Security",
-    //     lastName: "Check",
-    //     age: 25,
-    //     username: "seccheck_auto",
-    //     password: "topsecret",
-    //   };
-
-    //   const response = await authApi.post("/users/add", newUser);
-    //   const body = await response.json();
-    //   console.log(body);
-    //   expect(body).not.toHaveProperty("password");
-    // });
   });
 
   test.describe("PATCH /users/:id", () => {
-    test("partially updates a user and returns merged result", async ({
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "Update User",
+      });
+    });
+
+    test("partially updates a user and returns the merged result", async ({
       authApi,
     }) => {
       const patch = { firstName: "UpdatedName" };
@@ -209,13 +240,19 @@ test.describe("Users API", () => {
 
       const body = await response.json();
       expect(body.firstName).toBe("UpdatedName");
-      // Other fields should still exist
       expect(body).toHaveProperty("email");
       expect(body).toHaveProperty("username");
     });
   });
 
   test.describe("DELETE /users/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Users",
+        story: "Delete User",
+      });
+    });
+
     test("deletes a user and returns the deleted record", async ({
       authApi,
     }) => {

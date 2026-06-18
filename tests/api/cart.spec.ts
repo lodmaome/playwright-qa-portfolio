@@ -1,7 +1,15 @@
 import { expect, test } from "../../fixtures/api.fixture";
+import { setAllureMeta } from "../../tests/utils/allure";
 
 test.describe("Carts API", () => {
   test.describe("GET /carts", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Carts",
+        story: "List Carts",
+      });
+    });
+
     test("returns a paginated list of carts", async ({ authApi }) => {
       const response = await authApi.get("/carts");
 
@@ -16,7 +24,7 @@ test.describe("Carts API", () => {
       });
     });
 
-    test("each cart has the expected schema", async ({ authApi }) => {
+    test("each cart matches the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/carts?limit=3");
       const { carts } = await response.json();
 
@@ -33,7 +41,7 @@ test.describe("Carts API", () => {
       }
     });
 
-    test("each product inside a cart has the expected schema", async ({
+    test("each product inside a cart matches the expected schema", async ({
       authApi,
     }) => {
       const response = await authApi.get("/carts/1");
@@ -54,6 +62,13 @@ test.describe("Carts API", () => {
   });
 
   test.describe("GET /carts/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Carts",
+        story: "Get Cart by ID",
+      });
+    });
+
     test("returns a single cart by id", async ({ authApi }) => {
       const response = await authApi.get("/carts/1");
 
@@ -72,7 +87,7 @@ test.describe("Carts API", () => {
       expect(body.discountedTotal).toBeLessThanOrEqual(body.total);
     });
 
-    test("totalQuantity matches the sum of product quantities", async ({
+    test("totalQuantity matches the sum of all product quantities", async ({
       authApi,
     }) => {
       const response = await authApi.get("/carts/1");
@@ -96,6 +111,13 @@ test.describe("Carts API", () => {
   });
 
   test.describe("POST /carts/add", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Carts",
+        story: "Create Cart",
+      });
+    });
+
     test("creates a new cart and returns it with an id", async ({
       authApi,
     }) => {
@@ -117,7 +139,7 @@ test.describe("Carts API", () => {
       expect(body.products).toHaveLength(2);
     });
 
-    test("calculates totals for a new cart", async ({ authApi }) => {
+    test("calculates totals correctly for a new cart", async ({ authApi }) => {
       const newCart = {
         userId: 2,
         products: [{ id: 10, quantity: 3 }],
@@ -132,7 +154,14 @@ test.describe("Carts API", () => {
   });
 
   test.describe("PATCH /carts/:id", () => {
-    test("merges products into an existing cart", async ({ authApi }) => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Carts",
+        story: "Update Cart",
+      });
+    });
+
+    test("merges new products into an existing cart", async ({ authApi }) => {
       const patch = {
         merge: true,
         products: [{ id: 20, quantity: 2 }],
@@ -164,10 +193,17 @@ test.describe("Carts API", () => {
   });
 
   test.describe("DELETE /carts/:id", () => {
+    test.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Carts",
+        story: "Delete Cart",
+      });
+    });
+
     test("deletes a cart and returns the deleted record", async ({
       authApi,
     }) => {
-      // DummyJSON is stateless — this call does not actually remove cart 1.
+      // DummyJSON is stateless
       const response = await authApi.delete("/carts/1");
 
       expect(response.status()).toBe(200);

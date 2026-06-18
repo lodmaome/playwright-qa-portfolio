@@ -12,6 +12,8 @@ export const inventoryTest = base.extend<InventoryFixtures>({
   inventoryPage: async ({ page }, use) => {
     setAllureMeta.bundle({
       epic: "SauceDemo UI",
+      feature: "Product Catalog",
+      story: "Browse Products",
       layer: "ui",
       severity: "normal",
     });
@@ -25,6 +27,8 @@ export const inventoryTest = base.extend<InventoryFixtures>({
   inventoryPageWithItem: async ({ page }, use) => {
     setAllureMeta.bundle({
       epic: "SauceDemo UI",
+      feature: "Product Catalog",
+      story: "Add to Cart",
       layer: "ui",
       severity: "normal",
       tags: ["inventory", "add-to-cart"],

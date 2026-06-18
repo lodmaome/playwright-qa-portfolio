@@ -1,13 +1,25 @@
 import { expect, cartTest as test } from "../../../fixtures/";
+import { setAllureMeta } from "../../../tests/utils/allure";
 import { waitForStableState } from "../../../tests/utils/retry";
 
 test.describe("Cart Visual", () => {
-  test("should match empty cart snapshot", async ({ cartPage }) => {
+  test.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Shopping Cart",
+      story: "Visual Regression",
+      layer: "visual",
+      tags: ["cart", "visual-regression"],
+    });
+  });
+
+  test("matches the baseline snapshot of an empty cart", async ({
+    cartPage,
+  }) => {
     await waitForStableState(cartPage.page);
     await expect(cartPage.page).toHaveScreenshot("cart-empty.png");
   });
 
-  test("should match cart with products snapshot", async ({
+  test("matches the baseline snapshot of a cart with products", async ({
     cartPageWithItem,
   }) => {
     await waitForStableState(cartPageWithItem.page);

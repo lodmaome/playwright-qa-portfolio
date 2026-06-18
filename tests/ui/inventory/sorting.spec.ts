@@ -1,4 +1,5 @@
 import { expect, inventoryTest } from "../../../fixtures";
+import { setAllureMeta } from "../../../tests/utils/allure";
 
 const SORT_SCENARIOS = [
   {
@@ -31,17 +32,29 @@ const SORT_SCENARIOS = [
   },
 ] as const;
 
-inventoryTest.describe("Product Sort", () => {
-  for (const scenario of SORT_SCENARIOS) {
-    inventoryTest(`sort by ${scenario.label}`, async ({ inventoryPage }) => {
-      await inventoryPage.sortProducts(scenario.option);
-
-      const isPrice = scenario.option === "lohi" || scenario.option === "hilo";
-      const values = isPrice
-        ? await inventoryPage.productPrices.allTextContents()
-        : await inventoryPage.products.allTextContents();
-
-      scenario.validator(values as string[]);
+inventoryTest.describe("Product Sorting", () => {
+  inventoryTest.beforeEach(() => {
+    setAllureMeta.bundle({
+      feature: "Product Catalog",
+      story: "Product Sorting",
+      tags: ["inventory", "sorting"],
     });
+  });
+
+  for (const scenario of SORT_SCENARIOS) {
+    inventoryTest(
+      `sorts products by ${scenario.label}`,
+      async ({ inventoryPage }) => {
+        await inventoryPage.sortProducts(scenario.option);
+
+        const isPrice =
+          scenario.option === "lohi" || scenario.option === "hilo";
+        const values = isPrice
+          ? await inventoryPage.productPrices.allTextContents()
+          : await inventoryPage.products.allTextContents();
+
+        scenario.validator(values as string[]);
+      },
+    );
   }
 });
