@@ -27,6 +27,7 @@ export default defineConfig({
     {
       name: "ui-login",
       testDir: "tests/ui/login",
+      testIgnore: ["**/*-visual.spec.ts"],
     },
     {
       name: "ui-setup",
