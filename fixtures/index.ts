@@ -1,4 +1,9 @@
 export { expect } from "@playwright/test";
+export {
+  cartA11yTest,
+  inventoryA11yTest,
+  loginA11yTest,
+} from "./accessibility.fixture";
 export { test as apiTest } from "./api.fixture";
 export { cartTest } from "./cart.fixture";
 export { test } from "./checkout.fixture";

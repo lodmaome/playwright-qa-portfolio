@@ -1,9 +1,9 @@
-import { expect, test } from "../../../fixtures";
+import { expect, inventoryTest } from "../../../fixtures";
 
 const SORT_SCENARIOS = [
   {
     option: "az",
-    label: "A to Z (default)",
+    label: "A to Z",
     validator: (names: string[]) =>
       expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b))),
   },
@@ -15,7 +15,7 @@ const SORT_SCENARIOS = [
   },
   {
     option: "lohi",
-    label: "Price low to high",
+    label: "Price: Low to High",
     validator: (prices: string[]) => {
       const nums = prices.map((p) => parseFloat(p.replace("$", "")));
       expect(nums).toEqual([...nums].sort((a, b) => a - b));
@@ -23,7 +23,7 @@ const SORT_SCENARIOS = [
   },
   {
     option: "hilo",
-    label: "Price high to low",
+    label: "Price: High to Low",
     validator: (prices: string[]) => {
       const nums = prices.map((p) => parseFloat(p.replace("$", "")));
       expect(nums).toEqual([...nums].sort((a, b) => b - a));
@@ -31,13 +31,17 @@ const SORT_SCENARIOS = [
   },
 ] as const;
 
-for (const scenario of SORT_SCENARIOS) {
-  test(`should sort products: ${scenario.label}`, async ({ inventoryPage }) => {
-    await inventoryPage.sortProducts(scenario.option);
-    const isPrice = scenario.option === "lohi" || scenario.option === "hilo";
-    const values = isPrice
-      ? await inventoryPage.productPrices.allTextContents()
-      : await inventoryPage.products.allTextContents();
-    scenario.validator(values as string[]);
-  });
-}
+inventoryTest.describe("Product Sort", () => {
+  for (const scenario of SORT_SCENARIOS) {
+    inventoryTest(`sort by ${scenario.label}`, async ({ inventoryPage }) => {
+      await inventoryPage.sortProducts(scenario.option);
+
+      const isPrice = scenario.option === "lohi" || scenario.option === "hilo";
+      const values = isPrice
+        ? await inventoryPage.productPrices.allTextContents()
+        : await inventoryPage.products.allTextContents();
+
+      scenario.validator(values as string[]);
+    });
+  }
+});

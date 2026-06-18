@@ -1,18 +1,28 @@
-import { expect, test } from "../../../fixtures/login.fixture";
+import { expect, loginTest } from "../../../fixtures";
+import { setAllureMeta } from "../../../tests/utils/allure";
 import { waitForStableState } from "../../../tests/utils/retry";
 
-test.describe("Login Visual", () => {
-  test("should match login page snapshot", async ({ loginPage }) => {
+loginTest.describe("Login Visual", () => {
+  loginTest("succesfull login snapshot", async ({ loginPage }) => {
+    setAllureMeta.story("Successful Login");
+    setAllureMeta.tags("visual-regression");
+
     await waitForStableState(loginPage.page);
     await expect(loginPage.page).toHaveScreenshot("login-page.png");
   });
 
-  test("should match invalid credentials snapshot", async ({ loginPage }) => {
-    await loginPage.attemptLogin("test", "test");
+  loginTest(
+    "show error for invalid credentials snapshot",
+    async ({ loginPage }) => {
+      setAllureMeta.story("Failed Login");
+      setAllureMeta.tags("visual-regression");
 
-    await waitForStableState(loginPage.page);
-    await expect(loginPage.page).toHaveScreenshot(
-      "login-invalid-credentials.png",
-    );
-  });
+      await loginPage.attemptLogin("invalid", "invalid");
+
+      await waitForStableState(loginPage.page);
+      await expect(loginPage.page).toHaveScreenshot(
+        "login-invalid-credentials.png",
+      );
+    },
+  );
 });
