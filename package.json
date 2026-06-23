@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "lint": "eslint",
-
+    "lint":       "eslint .",
+    "lint:fix":   "eslint . --fix",
+    "lint:check": "eslint . --max-warnings 0",
     "pretest": "node -e \"require('fs').rmSync('allure-results',{recursive:true,force:true});require('fs').rmSync('allure-report',{recursive:true,force:true})\"",
     "test": "playwright test",
     "posttest": "allure generate allure-results --clean -o allure-report && allure open allure-report",
-
     "report:allure": "allure generate allure-results --clean -o allure-report",
     "report:open": "allure open allure-report",
     "report:playwright": "playwright show-report"
@@ -19,12 +19,14 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.3",
     "allure-commandline": "^2.42.1",
     "allure-playwright": "^3.10.0",
     "eslint": "^9.39.4",
-    "typescript": "^6.0.3"
+    "eslint-plugin-playwright": "^2.10.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.0"
   }
-
 }
