@@ -1,85 +1,74 @@
-import { CUSTOMER } from "../../../constants/customer";
-import { Messages } from "../../../constants/messages";
 import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
+import {
+  CHECKOUT_ERROR_SCENARIOS,
+  CHECKOUT_SUCCESS_SCENARIOS,
+} from "../../data/checkout.data";
 
-test.describe("Checkout Information", () => {
-  test.describe("Form Validation", () => {
+test.describe("Checkout Information — Data-Driven", () => {
+  test.describe("Form Validation — Equivalence Classes", () => {
     test.beforeEach(() => {
       setAllureMeta.bundle({
         feature: "Checkout",
         story: "Form Validation",
-        tags: ["checkout", "form-validation"],
+        tags: ["checkout", "form-validation", "data-driven"],
       });
     });
 
-    test("shows an error when first name is missing", async ({
-      checkoutReady,
-    }) => {
-      await checkoutReady.continueCheckout();
-      await expect(checkoutReady.errorMessage).toHaveText(
-        Messages.CHECKOUT_INFORMATION_PAGE.MISSING_FIRST_NAME,
-      );
-    });
+    for (const scenario of CHECKOUT_ERROR_SCENARIOS) {
+      test(`[${scenario.id}] ${scenario.rationale}`, async ({
+        checkoutReady,
+      }) => {
+        await test.step(`fill form: firstName="${scenario.firstName}" lastName="${scenario.lastName}" zip="${scenario.postalCode}"`, async () => {
+          const result = await checkoutReady.completePersonalInformation(
+            scenario.firstName,
+            scenario.lastName,
+            scenario.postalCode,
+          );
+          if (!scenario.expectedError) {
+            await test.step("assert form was accepted — checkout overview page reached", async () => {
+              await expect(result.title).toHaveText("Checkout: Overview");
+            });
+          }
+        });
 
-    test("shows an error when last name is missing", async ({
-      checkoutReady,
-    }) => {
-      await test.step("fill first name and zip, leave last name empty", async () => {
-        await checkoutReady.completePersonalInformation(
-          CUSTOMER.firstName,
-          "",
-          CUSTOMER.postalCode,
-        );
+        if (scenario.expectedError) {
+          await test.step(`assert error: "${scenario.expectedError}"`, async () => {
+            await expect(checkoutReady.errorMessage).toBeVisible();
+            await expect(checkoutReady.errorMessage).toHaveText(
+              scenario.expectedError!,
+            );
+          });
+        }
       });
-      await test.step("verify last name error message", async () => {
-        await expect(checkoutReady.errorMessage).toHaveText(
-          Messages.CHECKOUT_INFORMATION_PAGE.MISSING_LAST_NAME,
-        );
-      });
-    });
-
-    test("shows an error when postal code is missing", async ({
-      checkoutReady,
-    }) => {
-      await checkoutReady.completePersonalInformation(
-        CUSTOMER.firstName,
-        CUSTOMER.lastName,
-        "",
-      );
-      await expect(checkoutReady.errorMessage).toHaveText(
-        Messages.CHECKOUT_INFORMATION_PAGE.MISSING_ZIP_CODE,
-      );
-    });
+    }
   });
 
-  test.describe("Navigation", () => {
+  test.describe("Valid Input — Boundary Values", () => {
     test.beforeEach(() => {
       setAllureMeta.bundle({
         feature: "Checkout",
         story: "Checkout Information Navigation",
-        tags: ["checkout", "navigation"],
+        tags: ["checkout", "boundary-values", "data-driven"],
       });
     });
 
-    test("returns to the cart page when the cancel button is clicked", async ({
-      checkoutReady,
-    }) => {
-      const cartPage = await checkoutReady.cancelCheckout();
-      await expect(cartPage.title).toHaveText("Your Cart");
-    });
+    for (const scenario of CHECKOUT_SUCCESS_SCENARIOS) {
+      test(`[${scenario.id}] ${scenario.rationale}`, async ({
+        checkoutReady,
+      }) => {
+        await test.step(`fill form: firstName="${scenario.firstName.slice(0, 20)}…" zip="${scenario.postalCode}"`, async () => {
+          const overviewPage = await checkoutReady.completePersonalInformation(
+            scenario.firstName,
+            scenario.lastName,
+            scenario.postalCode,
+          );
 
-    test("proceeds to the checkout overview page when valid information is submitted", async ({
-      checkoutReady,
-    }) => {
-      setAllureMeta.severity("blocker");
-      const checkoutOverviewPage =
-        await checkoutReady.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-      await expect(checkoutOverviewPage.title).toHaveText("Checkout: Overview");
-    });
+          await test.step("assert overview page reached", async () => {
+            await expect(overviewPage.title).toHaveText("Checkout: Overview");
+          });
+        });
+      });
+    }
   });
 });

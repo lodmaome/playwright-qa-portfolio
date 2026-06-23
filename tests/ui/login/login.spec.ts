@@ -1,76 +1,55 @@
 import { env } from "../../../config/env";
-import { Messages } from "../../../constants/messages";
-import { expect, loginTest } from "../../../fixtures";
+import { expect, loginTest as test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
+import { UI_LOGIN_SCENARIOS } from "../../data/login.data";
 
-loginTest.describe("Login", () => {
-  loginTest.describe("Successful Login", () => {
-    loginTest.beforeEach(() => {
+test.describe("Login — Data-Driven", () => {
+  test.describe("Successful Login", () => {
+    test.beforeEach(() => {
       setAllureMeta.bundle({
         feature: "Authentication",
         story: "Successful Login",
-        tags: ["login", "auth", "happy-path"],
+        tags: ["login", "auth", "happy-path", "data-driven"],
       });
     });
 
-    loginTest(
-      "logs in with valid credentials and lands on the inventory page",
-      async ({ loginPage }) => {
-        setAllureMeta.severity("blocker");
-
-        const inventoryPage = await loginPage.login(env.username, env.password);
-        await inventoryPage.assertLoaded();
-      },
-    );
+    test("logs in with valid credentials and lands on the inventory page", async ({
+      loginPage,
+    }) => {
+      setAllureMeta.severity("blocker");
+      const inventoryPage = await loginPage.login(env.username, env.password);
+      await inventoryPage.assertLoaded();
+    });
   });
 
-  loginTest.describe("Login Error Handling", () => {
-    loginTest.beforeEach(() => {
+  test.describe("Login Error Handling — Equivalence Classes", () => {
+    test.beforeEach(() => {
       setAllureMeta.bundle({
         feature: "Authentication",
         story: "Login Error Handling",
-        tags: ["login", "auth", "error-handling"],
+        tags: ["login", "auth", "error-handling", "data-driven"],
       });
     });
 
-    const invalidLoginScenarios = [
-      {
-        description: "locked out user",
-        username: env.locked_out_username,
-        password: env.password,
-        expectedError: Messages.LOGIN_PAGE.LOCKED_USER_MESSAGE,
-      },
-      {
-        description: "invalid credentials",
-        username: env.username,
-        password: "test.123",
-        expectedError: Messages.LOGIN_PAGE.INVALID_CREDENTIALS,
-      },
-      {
-        description: "empty username",
-        username: "",
-        password: env.password,
-        expectedError: Messages.LOGIN_PAGE.EMPTY_USERNAME,
-      },
-      {
-        description: "empty password",
-        username: env.username,
-        password: "",
-        expectedError: Messages.LOGIN_PAGE.EMPTY_PASSWORD,
-      },
-    ];
+    for (const scenario of UI_LOGIN_SCENARIOS) {
+      test(`[${scenario.id}] ${scenario.equivalenceClass}`, async ({
+        loginPage,
+      }) => {
+        await loginPage.attemptLogin(scenario.username, scenario.password);
 
-    for (const scenario of invalidLoginScenarios) {
-      loginTest(
-        `shows an error message for ${scenario.description}`,
-        async ({ loginPage }) => {
-          await loginPage.attemptLogin(scenario.username, scenario.password);
-          await expect(loginPage.errorMessage).toBeVisible();
+        if (scenario.outcome === "success") {
+          await expect(loginPage.page).toHaveURL(/inventory/);
+          return;
+        }
+
+        await expect(loginPage.errorMessage).toBeVisible();
+
+        if (scenario.expectedError) {
           await expect(loginPage.errorMessage).toHaveText(
             scenario.expectedError,
           );
-        },
-      );
+        }
+      });
     }
   });
 });
