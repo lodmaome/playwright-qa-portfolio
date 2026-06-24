@@ -1,3 +1,4 @@
+import { type Locator } from "@playwright/test";
 import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
 import {
@@ -50,9 +51,7 @@ test.describe("Checkout Information — Data-Driven", () => {
       test(`[${scenario.id}] ${scenario.rationale}`, async ({
         checkoutReady,
       }) => {
-        let overviewTitle: Awaited<
-          ReturnType<typeof checkoutReady.completePersonalInformation>
-        >["title"];
+        let overviewTitle: Locator;
 
         await test.step(`fill form: firstName="${scenario.firstName.slice(0, 20)}…" zip="${scenario.postalCode}"`, async () => {
           const overviewPage = await checkoutReady.completePersonalInformation(

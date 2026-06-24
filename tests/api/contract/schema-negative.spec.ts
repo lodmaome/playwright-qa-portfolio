@@ -5,7 +5,7 @@
 
 import { expect, test } from "../../../fixtures/api.fixture";
 import { setAllureMeta } from "../../../tests/utils/allure";
-import { ProductSchema } from "../schemas/product.schema";
+import { ProductListSchema, ProductSchema } from "../schemas/product.schema";
 import { UserSchema } from "../schemas/user.schema";
 
 const INVALID_PRODUCT_SCENARIOS = [
@@ -116,7 +116,7 @@ test.describe("ProductListSchema — Negative Schema Tests", () => {
 
   INVALID_PRODUCT_ENVELOPE_SCENARIOS.forEach(({ label, key, value }) => {
     test(`rejects a product list envelope when ${label}`, () => {
-      const result = ProductSchema.safeParse({
+      const result = ProductListSchema.safeParse({
         ...validEnvelope,
         [key]: value,
       });

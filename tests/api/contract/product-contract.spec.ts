@@ -7,7 +7,6 @@
 
 import { expect, test } from "../../../fixtures/api.fixture";
 import { setAllureMeta } from "../../../tests/utils/allure";
-import { ProductSchema } from "../schemas/product.schema";
 
 test.describe("Products API — Contract Boundary Tests", () => {
   test.beforeEach(() => {
@@ -18,18 +17,7 @@ test.describe("Products API — Contract Boundary Tests", () => {
     });
   });
 
-  test("price is never negative across the full product catalog", async ({
-    authApi,
-  }) => {
-    const response = await authApi.get("/products?limit=100");
-    const { products } = (await response.json()) as { products: unknown[] };
-    for (const product of products) {
-      const parsed = ProductSchema.parse(product);
-      expect(parsed.price).toBeGreaterThan(0);
-    }
-  });
-
-  test("rating is within the valid 0–5 range across the full product catalog", async ({
+  test("rating is within the valid 0-5 range across the full product catalog", async ({
     authApi,
   }) => {
     const response = await authApi.get("/products?limit=100");

@@ -1,10 +1,13 @@
 import { type APIRequestContext, type APIResponse } from "@playwright/test";
 
 export class ApiClient {
-  constructor(
-    private request: APIRequestContext,
-    private token: string,
-  ) {}
+  private request: APIRequestContext;
+  private token: string;
+
+  constructor(request: APIRequestContext, token: string) {
+    this.request = request;
+    this.token = token;
+  }
 
   async get(url: string): Promise<APIResponse> {
     return this.request.get(url, {
