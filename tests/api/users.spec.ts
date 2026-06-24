@@ -1,7 +1,27 @@
-import z from "zod";
+import { z } from "zod";
 import { expect, test } from "../../fixtures/api.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
-import { UserListSchema, UserSchema } from "./schemas/user.schema";
+import { UserListSchema, UserSchema, type User } from "./schemas/user.schema";
+
+interface PaginatedUsers {
+  users: User[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+interface PostsResponse {
+  posts: { userId: number; [key: string]: unknown }[];
+}
+
+interface CartsResponse {
+  carts: { userId: number; [key: string]: unknown }[];
+}
+interface DeletedUser {
+  id: number;
+  isDeleted: boolean;
+  deletedOn: string;
+}
 
 test.describe("Users API", () => {
   test.describe("GET /users", () => {
@@ -17,7 +37,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as PaginatedUsers;
       expect(body).toMatchObject({
         users: expect.any(Array),
         total: expect.any(Number),
@@ -29,18 +49,18 @@ test.describe("Users API", () => {
 
     test("each user matches the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/users?limit=5");
-      const body = await response.json();
+      const raw: unknown = await response.json();
 
-      const result = UserListSchema.safeParse(body);
-      expect(result.success, result.error?.message).toBe(true);
+      const { users } = UserListSchema.parse(raw);
 
-      for (const user of result.data!.users) {
+      for (const user of users) {
         const userResult = UserSchema.safeParse(user);
-
-        expect(userResult.success).toBeTruthy();
-        if (!userResult.success) {
-          console.error(z.treeifyError(userResult.error));
-        }
+        expect(
+          userResult.success,
+          userResult.success
+            ? undefined
+            : JSON.stringify(z.treeifyError(userResult.error)),
+        ).toBe(true);
       }
     });
 
@@ -49,7 +69,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as PaginatedUsers;
       expect(body.users).toHaveLength(3);
       expect(body.skip).toBe(5);
       expect(body.limit).toBe(3);
@@ -64,7 +84,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const { users } = await response.json();
+      const { users } = (await response.json()) as PaginatedUsers;
       expect(users.length).toBeGreaterThan(0);
 
       for (const user of users) {
@@ -79,7 +99,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const { users } = await response.json();
+      const { users } = (await response.json()) as PaginatedUsers;
       expect(users.length).toBeGreaterThan(0);
 
       for (const user of users) {
@@ -102,7 +122,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as User;
       expect(body.id).toBe(1);
       expect(body).toHaveProperty("firstName");
       expect(body).toHaveProperty("email");
@@ -110,14 +130,14 @@ test.describe("Users API", () => {
 
     test("email is in a valid format", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
-      const body = await response.json();
+      const body = (await response.json()) as User;
 
       expect(body.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     });
 
     test("age is a positive integer", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
-      const body = await response.json();
+      const body = (await response.json()) as User;
 
       expect(body.age).toBeGreaterThan(0);
       expect(Number.isInteger(body.age)).toBe(true);
@@ -125,7 +145,7 @@ test.describe("Users API", () => {
 
     test("role is one of the expected enum values", async ({ authApi }) => {
       const response = await authApi.get("/users/1");
-      const body = await response.json();
+      const body = (await response.json()) as User;
 
       expect(["admin", "moderator", "user"]).toContain(body.role);
     });
@@ -135,7 +155,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(404);
 
-      const body = await response.json();
+      const body = (await response.json()) as { message: string };
       expect(body).toHaveProperty("message");
     });
   });
@@ -155,7 +175,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const { posts } = await response.json();
+      const { posts } = (await response.json()) as PostsResponse;
       expect(posts.length).toBeGreaterThan(0);
 
       for (const post of posts) {
@@ -179,7 +199,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const { carts } = await response.json();
+      const { carts } = (await response.json()) as CartsResponse;
       expect(Array.isArray(carts)).toBe(true);
 
       for (const cart of carts) {
@@ -214,7 +234,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(201);
 
-      const body = await response.json();
+      const body = (await response.json()) as User & { id: number };
       expect(body.id).toBeDefined();
       expect(body.firstName).toBe(newUser.firstName);
       expect(body.email).toBe(newUser.email);
@@ -238,7 +258,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as User;
       expect(body.firstName).toBe("UpdatedName");
       expect(body).toHaveProperty("email");
       expect(body).toHaveProperty("username");
@@ -260,7 +280,7 @@ test.describe("Users API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as DeletedUser;
       expect(body.id).toBe(1);
       expect(body.isDeleted).toBe(true);
       expect(body.deletedOn).toBeDefined();

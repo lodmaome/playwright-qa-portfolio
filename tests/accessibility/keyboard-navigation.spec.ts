@@ -45,10 +45,11 @@ test.describe("Keyboard Navigation", () => {
   // SauceDemo accessibility bug: after a failed login attempt
   // browser focus stays at login button
   // instead of moving to the error message container.
-  test.skip("moves focus to the error message after invalid credentials are submitted", async ({
-    loginPage,
-  }) => {
-    await loginPage.attemptLogin(env.username, "test123");
-    await expect(loginPage.errorMessage).toBeFocused();
-  });
+  test.fail(
+    "moves focus to the error message after invalid credentials are submitted",
+    async ({ loginPage }) => {
+      await loginPage.attemptLogin(env.username, "test123");
+      await expect(loginPage.errorMessage).toBeFocused();
+    },
+  );
 });

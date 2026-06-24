@@ -1,6 +1,31 @@
 import { expect, test } from "../../fixtures/api.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
 
+interface CartProduct {
+  id: number;
+  quantity: number;
+  title: string;
+  price: number;
+  total: number;
+  discountPercentage: number;
+  discountedTotal: number;
+}
+
+interface Cart {
+  id: number;
+  userId: number;
+  products: CartProduct[];
+  total: number;
+  discountedTotal: number;
+  totalProducts: number;
+  totalQuantity: number;
+}
+
+interface DeletedCart extends Cart {
+  isDeleted: boolean;
+  deletedOn: string;
+}
+
 test.describe("Carts API", () => {
   test.describe("GET /carts", () => {
     test.beforeEach(() => {
@@ -15,7 +40,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body).toMatchObject({
         carts: expect.any(Array),
         total: expect.any(Number),
@@ -26,7 +51,8 @@ test.describe("Carts API", () => {
 
     test("each cart matches the expected schema", async ({ authApi }) => {
       const response = await authApi.get("/carts?limit=3");
-      const { carts } = await response.json();
+      const body: unknown = await response.json();
+      const { carts } = body as { carts: unknown[] };
 
       for (const cart of carts) {
         expect(cart).toMatchObject({
@@ -45,7 +71,7 @@ test.describe("Carts API", () => {
       authApi,
     }) => {
       const response = await authApi.get("/carts/1");
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
 
       for (const product of body.products) {
         expect(product).toMatchObject({
@@ -74,7 +100,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body.id).toBe(1);
     });
 
@@ -82,7 +108,7 @@ test.describe("Carts API", () => {
       authApi,
     }) => {
       const response = await authApi.get("/carts/1");
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
 
       expect(body.discountedTotal).toBeLessThanOrEqual(body.total);
     });
@@ -91,7 +117,7 @@ test.describe("Carts API", () => {
       authApi,
     }) => {
       const response = await authApi.get("/carts/1");
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
 
       const sumOfQuantities = body.products.reduce(
         (sum: number, p: { quantity: number }) => sum + p.quantity,
@@ -105,7 +131,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(404);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
@@ -133,7 +159,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(201);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body.id).toBeDefined();
       expect(body.userId).toBe(newCart.userId);
       expect(body.products).toHaveLength(2);
@@ -146,7 +172,7 @@ test.describe("Carts API", () => {
       };
 
       const response = await authApi.post("/carts/add", newCart);
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
 
       expect(body.total).toBeGreaterThan(0);
       expect(body.totalQuantity).toBe(3);
@@ -171,7 +197,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body.id).toBe(1);
       expect(body.products.length).toBeGreaterThan(0);
     });
@@ -186,7 +212,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body.products).toHaveLength(1);
       expect(body.products[0].id).toBe(1);
     });
@@ -208,7 +234,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as DeletedCart;
       expect(body.id).toBe(1);
       expect(body.isDeleted).toBe(true);
       expect(body.deletedOn).toBeDefined();
@@ -219,7 +245,7 @@ test.describe("Carts API", () => {
 
       expect(response.status()).toBe(404);
 
-      const body = await response.json();
+      const body = (await response.json()) as Cart;
       expect(body).toMatchObject({ message: expect.any(String) });
     });
   });

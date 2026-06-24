@@ -1,13 +1,13 @@
 import { PRODUCTS } from "../constants/products";
-import { CartPage } from "../pages/CartPage";
+import { type CartPage } from "../pages/CartPage";
 import { setAllureMeta } from "../tests/utils/allure";
 import { inventoryTest } from "./inventory.fixture";
 
-type CartFixtures = {
+interface CartFixtures {
   cartPage: CartPage;
   cartPageWithItem: CartPage;
   cartPageWithMultipleItems: CartPage;
-};
+}
 
 export const cartTest = inventoryTest.extend<CartFixtures>({
   cartPage: async ({ inventoryPage }, use) => {

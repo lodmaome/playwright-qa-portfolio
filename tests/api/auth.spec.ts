@@ -5,6 +5,8 @@ import { login } from "./auth.api";
 
 test.describe("Auth API", () => {
   test.describe("POST /auth/login", () => {
+    const INVALID_CREDENTIALS_PATTERN = /invalid/i;
+
     test.beforeEach(() => {
       setAllureMeta.bundle({
         feature: "Authentication",
@@ -28,7 +30,15 @@ test.describe("Auth API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as {
+        id: number;
+        username: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        accessToken: string;
+        refreshToken: string;
+      };
       expect(body).toMatchObject({
         id: expect.any(Number),
         username: expect.any(String),
@@ -46,6 +56,9 @@ test.describe("Auth API", () => {
       });
 
       expect(response.status()).toBe(400);
+
+      const body = (await response.json()) as { message: string };
+      expect(body).toHaveProperty("message");
     });
 
     test("returns 400 on wrong password", async ({ request }) => {
@@ -58,8 +71,8 @@ test.describe("Auth API", () => {
 
       expect(response.status()).toBe(400);
 
-      const body = await response.json();
-      expect(body).toHaveProperty("message");
+      const body = (await response.json()) as { message: string };
+      expect(body.message).toMatch(INVALID_CREDENTIALS_PATTERN);
     });
 
     test("returns 400 on non-existent user", async ({ request }) => {
@@ -71,6 +84,9 @@ test.describe("Auth API", () => {
       });
 
       expect(response.status()).toBe(400);
+
+      const body = (await response.json()) as { message: string };
+      expect(body.message).toMatch(INVALID_CREDENTIALS_PATTERN);
     });
   });
 
@@ -87,7 +103,11 @@ test.describe("Auth API", () => {
 
       expect(response.status()).toBe(200);
 
-      const body = await response.json();
+      const body = (await response.json()) as {
+        id: number;
+        username: string;
+        email: string;
+      };
       expect(body).toMatchObject({
         id: expect.any(Number),
         username: expect.any(String),

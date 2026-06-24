@@ -1,5 +1,9 @@
-import { APIRequestContext } from "@playwright/test";
+import { type APIRequestContext } from "@playwright/test";
 import { env } from "../../config/env";
+
+interface LoginResponse {
+  accessToken: string;
+}
 
 export async function login(request: APIRequestContext): Promise<string> {
   const response = await request.post("/auth/login", {
@@ -8,6 +12,6 @@ export async function login(request: APIRequestContext): Promise<string> {
       password: env.api_password,
     },
   });
-  const body = await response.json();
+  const body = (await response.json()) as LoginResponse;
   return body.accessToken;
 }

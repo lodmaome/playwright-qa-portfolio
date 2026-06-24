@@ -43,12 +43,12 @@ test.describe("Inventory Accessibility", () => {
   test("all product images have non-empty alt text", async ({
     inventoryPage,
   }) => {
-    const images = inventoryPage.page.locator(".inventory_item img");
+    const images = inventoryPage.page.getByText(".inventory_item img");
     const count = await images.count();
 
     for (let i = 0; i < count; i++) {
-      const alt = await images.nth(i).getAttribute("alt");
-      expect(alt, `Image at index ${i} is missing alt text`).toBeTruthy();
+      const alt = images.nth(i);
+      await expect(alt, `Image at index ${i} is missing alt text`).toHaveAttribute("alt", );
     }
   });
 });

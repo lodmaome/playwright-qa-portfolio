@@ -1,13 +1,13 @@
 import { CUSTOMER } from "../constants/customer";
-import { CheckoutCompletePage } from "../pages/CheckoutCompletePage";
-import { CheckoutInformationPage } from "../pages/CheckoutInformationPage";
+import { type CheckoutCompletePage } from "../pages/CheckoutCompletePage";
+import { type CheckoutInformationPage } from "../pages/CheckoutInformationPage";
 import { setAllureMeta } from "../tests/utils/allure";
 import { cartTest } from "./cart.fixture";
 
-type CheckoutFixtures = {
+interface CheckoutFixtures {
   checkoutReady: CheckoutInformationPage;
   completedCheckout: CheckoutCompletePage;
-};
+}
 
 export const test = cartTest.extend<CheckoutFixtures>({
   checkoutReady: async ({ cartPageWithItem }, use) => {

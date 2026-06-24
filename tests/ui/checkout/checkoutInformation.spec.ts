@@ -20,26 +20,19 @@ test.describe("Checkout Information — Data-Driven", () => {
         checkoutReady,
       }) => {
         await test.step(`fill form: firstName="${scenario.firstName}" lastName="${scenario.lastName}" zip="${scenario.postalCode}"`, async () => {
-          const result = await checkoutReady.completePersonalInformation(
+          await checkoutReady.completePersonalInformation(
             scenario.firstName,
             scenario.lastName,
             scenario.postalCode,
           );
-          if (!scenario.expectedError) {
-            await test.step("assert form was accepted — checkout overview page reached", async () => {
-              await expect(result.title).toHaveText("Checkout: Overview");
-            });
-          }
         });
 
-        if (scenario.expectedError) {
-          await test.step(`assert error: "${scenario.expectedError}"`, async () => {
-            await expect(checkoutReady.errorMessage).toBeVisible();
-            await expect(checkoutReady.errorMessage).toHaveText(
-              scenario.expectedError!,
-            );
-          });
-        }
+        await test.step(`assert error: "${scenario.expectedError}"`, async () => {
+          await expect(checkoutReady.errorMessage).toBeVisible();
+          await expect(checkoutReady.errorMessage).toHaveText(
+            scenario.expectedError,
+          );
+        });
       });
     }
   });
@@ -57,16 +50,21 @@ test.describe("Checkout Information — Data-Driven", () => {
       test(`[${scenario.id}] ${scenario.rationale}`, async ({
         checkoutReady,
       }) => {
+        let overviewTitle: Awaited<
+          ReturnType<typeof checkoutReady.completePersonalInformation>
+        >["title"];
+
         await test.step(`fill form: firstName="${scenario.firstName.slice(0, 20)}…" zip="${scenario.postalCode}"`, async () => {
           const overviewPage = await checkoutReady.completePersonalInformation(
             scenario.firstName,
             scenario.lastName,
             scenario.postalCode,
           );
+          overviewTitle = overviewPage.title;
+        });
 
-          await test.step("assert overview page reached", async () => {
-            await expect(overviewPage.title).toHaveText("Checkout: Overview");
-          });
+        await test.step("assert overview page reached", async () => {
+          await expect(overviewTitle).toHaveText("Checkout: Overview");
         });
       });
     }

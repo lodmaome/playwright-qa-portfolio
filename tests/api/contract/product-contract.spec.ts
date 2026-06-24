@@ -22,13 +22,10 @@ test.describe("Products API — Contract Boundary Tests", () => {
     authApi,
   }) => {
     const response = await authApi.get("/products?limit=100");
-    const { products } = await response.json();
+    const { products } = (await response.json()) as { products: unknown[] };
     for (const product of products) {
-      const parsed = ProductSchema.safeParse(product);
-      expect(parsed.success).toBe(true);
-      if (parsed.success) {
-        expect(parsed.data.price).toBeGreaterThan(0);
-      }
+      const parsed = ProductSchema.parse(product);
+      expect(parsed.price).toBeGreaterThan(0);
     }
   });
 
@@ -36,7 +33,9 @@ test.describe("Products API — Contract Boundary Tests", () => {
     authApi,
   }) => {
     const response = await authApi.get("/products?limit=100");
-    const { products } = await response.json();
+    const { products } = (await response.json()) as {
+      products: { rating: number }[];
+    };
     const outOfRange = products.filter(
       (p: { rating: number }) => p.rating < 0 || p.rating > 5,
     );

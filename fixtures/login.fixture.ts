@@ -2,9 +2,9 @@ import { test as base } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
 import { setAllureMeta } from "../tests/utils/allure";
 
-type LoginFixtures = {
+interface LoginFixtures {
   loginPage: LoginPage;
-};
+}
 
 export const test = base.extend<LoginFixtures>({
   loginPage: async ({ page }, use) => {

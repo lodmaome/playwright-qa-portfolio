@@ -9,7 +9,7 @@ export const ProductSchema = z.object({
   stock: z.number().int().nonnegative(),
   category: z.string().min(1),
   thumbnail: z.url(),
-  images: z.array(z.string().url()).optional(),
+  images: z.array(z.url()).optional(),
 });
 
 export const ProductListSchema = z.object({

@@ -30,7 +30,13 @@ export default defineConfig([
       "playwright/no-conditional-in-test": "warn",
       "playwright/no-focused-test": "error",
       "playwright/no-skipped-test": "warn",
-      "playwright/expect-expect": "error",
+      "playwright/expect-expect": [
+        "error",
+        {
+          assertFunctionNames: ["assertLoaded", "assert*"],
+          assertFunctionPatterns: ["^assert.*"],
+        },
+      ],
     },
   },
 
@@ -57,6 +63,10 @@ export default defineConfig([
       "@typescript-eslint/no-unnecessary-condition": "warn",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        { allowNumber: true },
+      ],
 
       "no-console": ["warn", { allow: ["warn", "error", "info"] }],
       "no-debugger": "error",
@@ -94,6 +104,19 @@ export default defineConfig([
       ".playwright/**",
       "dist/**",
       "coverage/**",
+      "allure-report/**",
+      "allure-results/**",
+      "eslint.config.js",
     ],
+  },
+
+  {
+    settings: {
+      playwright: {
+        globalAliases: {
+          test: ["loginTest", "inventoryTest"],
+        },
+      },
+    },
   },
 ]);

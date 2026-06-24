@@ -56,7 +56,7 @@ test.describe("Checkout Overview", () => {
       const match = itemTotalText?.match(/\$(\d+\.\d{2})/);
       expect(match, "Item total label is missing a dollar amount").toBeTruthy();
 
-      const itemTotal = parseFloat(match![1]);
+      const itemTotal = parseFloat(match?.[1] ?? "0");
       expect(itemTotal).toBeGreaterThan(0);
     });
 
@@ -76,7 +76,7 @@ test.describe("Checkout Overview", () => {
       const match = taxText?.match(/\$(\d+\.\d{2})/);
       expect(match, "Tax label is missing a dollar amount").toBeTruthy();
 
-      const tax = parseFloat(match![1]);
+      const tax = parseFloat(match?.[1] ?? "0");
       expect(tax).toBeGreaterThanOrEqual(0);
     });
 

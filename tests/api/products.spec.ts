@@ -5,7 +5,22 @@ import {
   PAGINATION_SCENARIOS,
   SEARCH_SCENARIOS,
   SORT_SCENARIOS,
+  type SearchableProduct,
 } from "../data/product.data";
+
+type Product = SearchableProduct & {
+  id: number;
+  price: number;
+  rating: number;
+  stock: number;
+};
+
+interface PaginatedProducts {
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+}
 
 test.describe("Products API — Data-Driven", () => {
   test.describe("GET /products — Pagination", () => {
@@ -22,17 +37,22 @@ test.describe("Products API — Data-Driven", () => {
         authApi,
       }) => {
         const params = new URLSearchParams();
-        if (scenario.params.limit !== undefined)
+
+        // eslint-disable-next-line playwright/no-conditional-in-test
+        if (scenario.params.limit !== undefined) {
           params.set("limit", String(scenario.params.limit));
-        if (scenario.params.skip !== undefined)
+        }
+        // eslint-disable-next-line playwright/no-conditional-in-test
+        if (scenario.params.skip !== undefined) {
           params.set("skip", String(scenario.params.skip));
+        }
 
         const qs = params.toString();
         const response = await authApi.get(`/products${qs ? `?${qs}` : ""}`);
 
         expect(response.status()).toBe(scenario.expectedStatus);
 
-        const body = await response.json();
+        const body = (await response.json()) as PaginatedProducts;
 
         expect(body).toMatchObject({
           products: expect.any(Array),
@@ -41,20 +61,35 @@ test.describe("Products API — Data-Driven", () => {
           limit: expect.any(Number),
         });
 
-        if (scenario.expectedCount !== null) {
-          expect(body.products).toHaveLength(scenario.expectedCount);
-        } else {
-          expect(body.products.length).toBeGreaterThan(0);
+        // eslint-disable-next-line playwright/no-conditional-in-test
+        switch (scenario.countAssertion.kind) {
+          case "exact":
+            // eslint-disable-next-line playwright/no-conditional-expect
+            expect(body.products).toHaveLength(scenario.countAssertion.count);
+            break;
+          case "max":
+            // eslint-disable-next-line playwright/no-conditional-expect
+            expect(body.products.length).toBeGreaterThan(0);
+            // eslint-disable-next-line playwright/no-conditional-expect
+            expect(body.products.length).toBeLessThanOrEqual(
+              scenario.countAssertion.max,
+            );
+            break;
+          case "nonEmpty":
+            // eslint-disable-next-line playwright/no-conditional-expect
+            expect(body.products.length).toBeGreaterThan(0);
+            break;
         }
 
-        if (scenario.params.skip !== undefined) {
-          expect(body.skip).toBe(scenario.params.skip);
+        // eslint-disable-next-line playwright/no-conditional-in-test
+        if (scenario.expectedSkip !== undefined) {
+          // eslint-disable-next-line playwright/no-conditional-expect
+          expect(body.skip).toBe(scenario.expectedSkip);
         }
-        if (
-          scenario.params.limit !== undefined &&
-          scenario.expectedStatus === 200
-        ) {
-          expect(body.limit).toBe(scenario.params.limit);
+        // eslint-disable-next-line playwright/no-conditional-in-test
+        if (scenario.expectedLimit !== undefined) {
+          // eslint-disable-next-line playwright/no-conditional-expect
+          expect(body.limit).toBe(scenario.expectedLimit);
         }
       });
     }
@@ -79,14 +114,14 @@ test.describe("Products API — Data-Driven", () => {
 
         expect(response.status()).toBe(200);
 
-        const { products } = await response.json();
+        const { products } = (await response.json()) as PaginatedProducts;
         expect(products.length).toBeGreaterThan(0);
 
-        const values: number[] = products.map(
-          (p: Record<string, number>) => p[scenario.sortBy],
-        );
+        const values = products.map((p) => p[scenario.sortBy]);
 
-        expect(() => scenario.validator(values)).not.toThrow();
+        expect(() => {
+          scenario.validator(values);
+        }).not.toThrow();
       });
     }
   });
@@ -109,22 +144,16 @@ test.describe("Products API — Data-Driven", () => {
 
         expect(response.status()).toBe(200);
 
-        const { products } = await response.json();
+        const { products } = (await response.json()) as PaginatedProducts;
         expect(Array.isArray(products)).toBe(true);
-
-        if (scenario.minResults === 0) {
-          return;
-        }
 
         expect(products.length).toBeGreaterThanOrEqual(scenario.minResults);
 
-        if (scenario.resultPredicate) {
-          for (const product of products) {
-            expect(
-              scenario.resultPredicate(product),
-              `Product "${product.title}" did not match predicate for query "${scenario.query}"`,
-            ).toBe(true);
-          }
+        for (const product of products) {
+          expect(
+            scenario.resultPredicate(product),
+            `Product "${product.title}" did not match predicate for query "${scenario.query}"`,
+          ).toBe(true);
         }
       });
     }

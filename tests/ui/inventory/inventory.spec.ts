@@ -98,7 +98,7 @@ inventoryTest.describe("Inventory", () => {
 
           // SauceDemo's PWA manifest references icon-192x192.png which returns
           // 404 on the server. This avoids a false failure on Firefox.
-          if (url.includes("icon-") && url.endsWith(".png")) return;
+          if (url.includes("icon-") && url.endsWith(".png")) {return;}
 
           if (
             ["stylesheet", "script", "image", "font"].includes(type) &&
@@ -126,7 +126,7 @@ inventoryTest.describe("Inventory", () => {
               }
             }).observe({ type: "largest-contentful-paint", buffered: true });
 
-            setTimeout(() => resolve(Infinity), 5000);
+            setTimeout(() => { resolve(Infinity); }, 5000);
           });
         });
 

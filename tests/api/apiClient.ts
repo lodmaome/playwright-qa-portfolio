@@ -1,4 +1,4 @@
-import { APIRequestContext } from "@playwright/test";
+import { type APIRequestContext, type APIResponse } from "@playwright/test";
 
 export class ApiClient {
   constructor(
@@ -6,7 +6,7 @@ export class ApiClient {
     private token: string,
   ) {}
 
-  async get(url: string) {
+  async get(url: string): Promise<APIResponse> {
     return this.request.get(url, {
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -14,7 +14,7 @@ export class ApiClient {
     });
   }
 
-  async post(url: string, data: unknown) {
+  async post(url: string, data: unknown): Promise<APIResponse> {
     return this.request.post(url, {
       data,
       headers: {
@@ -23,7 +23,7 @@ export class ApiClient {
     });
   }
 
-  async put(url: string, data: unknown) {
+  async put(url: string, data: unknown): Promise<APIResponse> {
     return this.request.put(url, {
       data,
       headers: {
@@ -32,7 +32,7 @@ export class ApiClient {
     });
   }
 
-  async patch(url: string, data: unknown) {
+  async patch(url: string, data: unknown): Promise<APIResponse> {
     return this.request.patch(url, {
       data,
       headers: {
@@ -41,7 +41,7 @@ export class ApiClient {
     });
   }
 
-  async delete(url: string) {
+  async delete(url: string): Promise<APIResponse> {
     return this.request.delete(url, {
       headers: {
         Authorization: `Bearer ${this.token}`,

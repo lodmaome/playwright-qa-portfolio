@@ -10,9 +10,9 @@ import { ApiClient } from "../tests/api/apiClient";
 import { login } from "../tests/api/auth.api";
 import { setAllureMeta } from "../tests/utils/allure";
 
-type ApiFixtures = {
+interface ApiFixtures {
   authApi: ApiClient;
-};
+}
 
 export const test = base.extend<ApiFixtures>({
   authApi: async ({ request }, use) => {

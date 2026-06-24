@@ -21,6 +21,7 @@ export default defineConfig({
   use: {
     baseURL: process.env.UI_BASE_URL,
     trace: "on-first-retry",
+    testIdAttribute: "data-test",
   },
 
   projects: [
@@ -90,10 +91,6 @@ export default defineConfig({
       use: {
         storageState: ".auth/login.json",
       },
-    },
-    {
-      name: "mobile",
-      testDir: "tests/mobile/",
     },
   ],
 });

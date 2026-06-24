@@ -3,10 +3,10 @@ import { PRODUCTS } from "../constants/products";
 import { InventoryPage } from "../pages/InventoryPage";
 import { setAllureMeta } from "../tests/utils/allure";
 
-type InventoryFixtures = {
+interface InventoryFixtures {
   inventoryPage: InventoryPage;
   inventoryPageWithItem: InventoryPage;
-};
+}
 
 export const inventoryTest = base.extend<InventoryFixtures>({
   inventoryPage: async ({ page }, use) => {

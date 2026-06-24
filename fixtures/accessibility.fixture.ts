@@ -20,7 +20,9 @@ function applyA11yMeta(feature: string, story: string) {
   });
 }
 
-type LoginA11yFixtures = { loginA11yPage: { url: string } };
+interface LoginA11yFixtures {
+  loginA11yPage: { url: string };
+}
 
 export const loginA11yTest = base.extend<LoginA11yFixtures>({
   loginA11yPage: async ({ page }, use) => {

@@ -1,33 +1,58 @@
-import { expect, inventoryTest } from "../../../fixtures";
+import { inventoryTest } from "../../../fixtures";
+import { type InventoryPage } from "../../../pages/InventoryPage";
 import { setAllureMeta } from "../../../tests/utils/allure";
 
 const SORT_SCENARIOS = [
   {
     option: "az",
     label: "A to Z",
-    validator: (names: string[]) =>
-      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b))),
+    dataSource: "names" as const,
+    getValues: async (page: InventoryPage) => page.products.allTextContents(),
+    assert: (names: string[]) => {
+      const sorted = [...names].sort((a, b) => a.localeCompare(b));
+      if (JSON.stringify(names) !== JSON.stringify(sorted)) {
+        throw new Error(`Names not sorted A→Z: ${names.join(", ")}`);
+      }
+    },
   },
   {
     option: "za",
     label: "Z to A",
-    validator: (names: string[]) =>
-      expect(names).toEqual([...names].sort((a, b) => b.localeCompare(a))),
+    dataSource: "names" as const,
+    getValues: async (page: InventoryPage) => page.products.allTextContents(),
+    assert: (names: string[]) => {
+      const sorted = [...names].sort((a, b) => b.localeCompare(a));
+      if (JSON.stringify(names) !== JSON.stringify(sorted)) {
+        throw new Error(`Names not sorted Z→A: ${names.join(", ")}`);
+      }
+    },
   },
   {
     option: "lohi",
     label: "Price: Low to High",
-    validator: (prices: string[]) => {
+    dataSource: "prices" as const,
+    getValues: async (page: InventoryPage) =>
+      page.productPrices.allTextContents(),
+    assert: (prices: string[]) => {
       const nums = prices.map((p) => parseFloat(p.replace("$", "")));
-      expect(nums).toEqual([...nums].sort((a, b) => a - b));
+      const sorted = [...nums].sort((a, b) => a - b);
+      if (JSON.stringify(nums) !== JSON.stringify(sorted)) {
+        throw new Error(`Prices not low→high: ${nums.join(", ")}`);
+      }
     },
   },
   {
     option: "hilo",
     label: "Price: High to Low",
-    validator: (prices: string[]) => {
+    dataSource: "prices" as const,
+    getValues: async (page: InventoryPage) =>
+      page.productPrices.allTextContents(),
+    assert: (prices: string[]) => {
       const nums = prices.map((p) => parseFloat(p.replace("$", "")));
-      expect(nums).toEqual([...nums].sort((a, b) => b - a));
+      const sorted = [...nums].sort((a, b) => b - a);
+      if (JSON.stringify(nums) !== JSON.stringify(sorted)) {
+        throw new Error(`Prices not high→low: ${nums.join(", ")}`);
+      }
     },
   },
 ] as const;
@@ -46,14 +71,11 @@ inventoryTest.describe("Product Sorting", () => {
       `sorts products by ${scenario.label}`,
       async ({ inventoryPage }) => {
         await inventoryPage.sortProducts(scenario.option);
+        const values = await scenario.getValues(inventoryPage);
 
-        const isPrice =
-          scenario.option === "lohi" || scenario.option === "hilo";
-        const values = isPrice
-          ? await inventoryPage.productPrices.allTextContents()
-          : await inventoryPage.products.allTextContents();
-
-        scenario.validator(values as string[]);
+        await inventoryTest.step("assert sort order", () => {
+          scenario.assert(values);
+        });
       },
     );
   }

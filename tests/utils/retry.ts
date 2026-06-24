@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 
 /**
  * Retries an action up to `maxRetries` times if it throws.
@@ -33,14 +33,12 @@ export async function withRetry<T>(
     }
   }
 
-  throw lastError;
+  throw (
+    lastError ??
+    new Error("withRetry: all attempts failed with no error captured")
+  );
 }
 
-/**
- * Waits for network activity to settle before taking snapshot assertions.
- * Prevents flakiness in visual regression tests.
- */
 export async function waitForStableState(page: Page): Promise<void> {
-  await page.waitForLoadState("domcontentloaded");
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("load");
 }

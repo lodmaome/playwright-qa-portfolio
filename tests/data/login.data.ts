@@ -33,16 +33,27 @@ export type LoginOutcome =
   | "locked"
   | "security";
 
-export interface LoginScenario {
+export interface LoginErrorScenario {
   id: string;
   equivalenceClass: string;
   username: string;
   password: string;
-  outcome: LoginOutcome;
-  expectedError?: string;
-  apiOnly?: boolean;
-  uiOnly?: boolean;
+  outcome: Exclude<LoginOutcome, "success">;
+  expectedError: string; // required — no optional
+  apiOnly?: true;
+  uiOnly?: true;
 }
+
+export interface LoginSuccessScenario {
+  id: string;
+  equivalenceClass: string;
+  username: string;
+  password: string;
+  outcome: "success";
+  apiOnly?: true;
+  uiOnly?: true;
+}
+export type LoginScenario = LoginErrorScenario | LoginSuccessScenario;
 
 export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
   {
@@ -123,6 +134,14 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
   },
 ] as const;
 
-export const UI_LOGIN_SCENARIOS = LOGIN_SCENARIOS.filter((s) => !s.apiOnly);
+export const UI_LOGIN_ERROR_SCENARIOS: readonly LoginErrorScenario[] =
+  LOGIN_SCENARIOS.filter(
+    (s): s is LoginErrorScenario => !s.apiOnly && s.outcome !== "success",
+  );
+
+export const UI_LOGIN_SUCCESS_SCENARIOS: readonly LoginSuccessScenario[] =
+  LOGIN_SCENARIOS.filter(
+    (s): s is LoginSuccessScenario => !s.apiOnly && s.outcome === "success",
+  );
 
 export const API_LOGIN_SCENARIOS = LOGIN_SCENARIOS.filter((s) => !s.uiOnly);

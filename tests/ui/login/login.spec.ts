@@ -1,7 +1,7 @@
 import { env } from "../../../config/env";
 import { expect, loginTest as test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
-import { UI_LOGIN_SCENARIOS } from "../../data/login.data";
+import { UI_LOGIN_ERROR_SCENARIOS } from "../../data/login.data";
 
 test.describe("Login — Data-Driven", () => {
   test.describe("Successful Login", () => {
@@ -31,24 +31,14 @@ test.describe("Login — Data-Driven", () => {
       });
     });
 
-    for (const scenario of UI_LOGIN_SCENARIOS) {
+    for (const scenario of UI_LOGIN_ERROR_SCENARIOS) {
       test(`[${scenario.id}] ${scenario.equivalenceClass}`, async ({
         loginPage,
       }) => {
         await loginPage.attemptLogin(scenario.username, scenario.password);
 
-        if (scenario.outcome === "success") {
-          await expect(loginPage.page).toHaveURL(/inventory/);
-          return;
-        }
-
         await expect(loginPage.errorMessage).toBeVisible();
-
-        if (scenario.expectedError) {
-          await expect(loginPage.errorMessage).toHaveText(
-            scenario.expectedError,
-          );
-        }
+        await expect(loginPage.errorMessage).toHaveText(scenario.expectedError);
       });
     }
   });
