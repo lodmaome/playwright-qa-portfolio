@@ -1,5 +1,6 @@
 import { test as setup } from "@playwright/test";
 import { env } from "../../config/env";
+import { AUTH_STORAGE_STATE } from "../../config/paths";
 import { LoginPage } from "../../pages/LoginPage";
 
 // eslint-disable-next-line playwright/expect-expect
@@ -10,6 +11,6 @@ setup("authenticate", async ({ page }) => {
   await loginPage.login(env.username, env.password);
 
   await page.context().storageState({
-    path: ".auth/login.json",
+    path: AUTH_STORAGE_STATE,
   });
 });

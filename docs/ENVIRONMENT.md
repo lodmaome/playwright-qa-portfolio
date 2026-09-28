@@ -6,31 +6,34 @@
 cp .env.example .env
 ```
 
-Fill in every variable — `config/env.ts` validates them all at startup and
-exits with a descriptive error for any that are missing.
+Fill in every variable — `config/env.ts` loads the environment variables and
+validates all required values at startup. If any required variable is missing,
+it exits with a descriptive error.
 
 ## Variables
 
-| Variable | Used by | Example |
-|---|---|---|
-| `UI_BASE_URL` | All UI projects (global `use.baseURL`) | `https://www.saucedemo.com` |
-| `API_BASE_URL` | `api` project (`use.baseURL` override) | `https://dummyjson.com` |
-| `STANDARD_USER` | Login setup, auth fixtures | `standard_user` |
-| `PASSWORD` | Login setup, auth fixtures | `secret_sauce` |
-| `API_USERNAME` | DummyJSON auth | `emilys` |
-| `API_PASSWORD` | DummyJSON auth | `emilyspass` |
+The required environment variables and example values are documented in
+`.env.example`. Use that file as the source of truth when
+creating a local `.env` file or configuring environment variables in CI.
+
+The main consumers of these variables are `auth.setup.ts`, `login.data.ts`,
+`login.spec.ts`, and `keyboard-navigation.spec.ts`.
 
 ## Base URL routing
 
-```
-playwright.config.ts
-  use.baseURL = UI_BASE_URL        ← inherited by all UI projects
-  projects[api].use.baseURL = API_BASE_URL  ← overrides for api project
-```
+config/env.ts
+  loads .env and validates UI_BASE_URL and API_BASE_URL
 
-API fixtures and auth helpers read `env.api_base_url` directly from
-`config/env.ts` rather than from Playwright's `baseURL`, keeping them
-usable outside the browser context.
+playwright.config.ts
+  use.baseURL = env.ui_base_url
+    ↑ inherited by all UI projects
+
+  projects[api].use.baseURL = env.api_base_url
+    ↑ overrides baseURL for the API project
+
+Both Playwright base URLs come from the validated values exported by
+config/env.ts. This keeps environment loading and required-variable
+validation in one place.
 
 ## Multiple environments
 
