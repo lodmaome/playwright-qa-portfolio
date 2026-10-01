@@ -32,12 +32,20 @@ npx playwright test       # all projects
 | `ui-login` | Login page UI tests | No |
 | `ui-setup` | Auth setup — writes `.auth/login.json` | — |
 | `ui-e2e-chromium` | Full UI suite on Chrome | Yes (depends on `ui-setup`) |
-| `ui-e2e-firefox` | Full UI suite on Firefox | Yes |
-| `ui-e2e-webkit` | Full UI suite on Safari/WebKit | Yes |
+| `ui-e2e-firefox` | Full UI suite on Firefox | Yes (depends on `ui-setup`)|
+| `ui-e2e-webkit` | Full UI suite on Safari/WebKit | Yes (depends on `ui-setup`)|
 | `api` | API contract tests (DummyJSON) | No browser |
 | `accessibility` | Unauthenticated a11y + keyboard nav | No |
 | `accessibility-authenticated` | Cart + inventory a11y | Yes |
 | `visual` | Visual snapshot regression | Yes |
+
+The three browser E2E projects intentionally exclude login-flow and visual
+specs. Login behavior is covered by the dedicated ui-login project, while
+visual regression runs through the visual project.
+
+As a result, the direct login-flow suite is not repeated across Chromium,
+Firefox, and WebKit. The cross-browser projects focus on the authenticated
+UI flows.
 
 Run a single project:
 
@@ -55,7 +63,9 @@ npm run report:allure       # generate Allure report
 npm run report:open         # open generated Allure report
 ```
 
-The CI workflow publishes the Allure report to GitHub Pages after each run.
+The Playwright HTML report retains traces, screenshots, and videos for failed
+tests. The CI workflow publishes the Allure report to GitHub Pages after each
+run.
 
 ## Docs
 

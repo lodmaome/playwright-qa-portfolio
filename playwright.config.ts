@@ -32,8 +32,12 @@ export default defineConfig({
 
   use: {
     baseURL: env.ui_base_url,
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
     testIdAttribute: "data-test",
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
   },
 
   projects: [

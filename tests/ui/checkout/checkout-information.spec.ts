@@ -1,6 +1,6 @@
 import { type Locator } from "@playwright/test";
 import { expect, test } from "../../../fixtures";
-import { setAllureMeta } from "../../../tests/utils/allure";
+import { setAllureMeta } from "../../utils/allure";
 import {
   CHECKOUT_ERROR_SCENARIOS,
   CHECKOUT_SUCCESS_SCENARIOS,

@@ -42,11 +42,43 @@ Duplicate `.env` per environment:
 ```bash
 cp .env .env.staging
 # edit .env.staging with staging URLs and credentials
-dotenv --path .env.staging npx playwright test
 ```
 
-Or export variables directly in your shell / CI pipeline before running
-`npx playwright test`.
+The project uses `dotenv/config` to load environment variables. To select a
+different `.env` file, set `DOTENV_CONFIG_PATH` before starting Playwright.
+
+### PowerShell
+
+```powershell
+$env:DOTENV_CONFIG_PATH = ".env.staging"
+npx playwright test
+```
+
+Set `DOTENV_CONFIG_PATH` on its own line before running the test command. This
+is preferable to using the `dotenv` CLI: the project depends on the `dotenv`
+library, which does not provide a `dotenv` command-line executable.
+
+To switch back to the default `.env` file in the same PowerShell session:
+
+```powershell
+Remove-Item Env:DOTENV_CONFIG_PATH
+```
+
+### Bash / CI
+
+```bash
+DOTENV_CONFIG_PATH=.env.staging npx playwright test
+```
+
+Or export the variable before running Playwright:
+
+```bash
+export DOTENV_CONFIG_PATH=.env.staging
+npx playwright test
+```
+
+Alternatively, export the environment variables directly in your shell or CI
+pipeline before running `npx playwright test`.
 
 ## CI
 

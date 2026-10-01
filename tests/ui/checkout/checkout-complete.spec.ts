@@ -1,6 +1,6 @@
 import { Messages } from "../../../constants/messages";
 import { expect, test } from "../../../fixtures";
-import { setAllureMeta } from "../../../tests/utils/allure";
+import { setAllureMeta } from "../../utils/allure";
 
 test.describe("Checkout Complete", () => {
   test.describe("UI Elements", () => {

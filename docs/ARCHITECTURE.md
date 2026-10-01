@@ -16,8 +16,17 @@ api               (no browser — uses APIRequestContext)
 accessibility     (unauthenticated pages only)
 ```
 
-`ui-setup` is the only project that touches the login form. Every downstream
-project inherits the persisted session and never re-runs the login flow.
+### Authentication flow
+
+`ui-setup` is the only project that logs in as a setup step and persists the
+authenticated browser state for dependent projects.
+
+The login form is exercised independently by the `ui-login` project and by
+the `login-a11y`and `login-visual` specs. These tests exercise login behavior
+directly rather than using the setup project as their test target.
+
+The authenticated E2E projects depend on `ui-setup` and reuse the generated
+storage state.
 
 ---
 
@@ -28,10 +37,11 @@ introduces a recurring failure mode: login page latency, form rendering,
 or a transient 5xx from the auth endpoint can kill an entire suite that
 has nothing to do with authentication.
 
-`ui-setup` runs once, persists the browser session to `.auth/login.json`,
-and all downstream projects declare `dependencies: ["ui-setup"]` and set
-`storageState: ".auth/login.json"`. Login UI behaviour is tested separately
-in the isolated `ui-login` project.
+`ui-setup` runs once, persists the browser session, and all downstream
+projects declare `dependencies: ["ui-setup"]` and reuse the shared
+authentication storage-state path defined in config/paths.ts.
+
+Login UI behaviour is tested separately in the isolated `ui-login` project.
 
 ---
 
@@ -88,9 +98,10 @@ so misconfigured environments surface before a single test runs.
 ## Why Allure alongside the Playwright HTML reporter
 
 The built-in Playwright HTML report is excellent for developers debugging a
-failure: traces, screenshots, and step-level diffs are all there.
+failure: traces, screenshots, and failure details are available directly from
+the report.
 
-Allure adds what the HTML report cannot: trend history across runs, flakiness
-detection, and richer test categorisation. That is what a QA lead or
-engineering manager looks at when deciding whether the suite is healthy, not
-just whether it passed today.
+Allure complements it with richer test categorisation and historical reporting
+across runs. That makes it useful for reviewing suite health and trends over
+time, while the Playwright report remains the primary tool for debugging an
+individual failure.

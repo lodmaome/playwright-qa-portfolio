@@ -2,7 +2,7 @@ import { CUSTOMER } from "../../../constants/customer";
 import { Messages } from "../../../constants/messages";
 import { PRODUCTS } from "../../../constants/products";
 import { expect, test } from "../../../fixtures";
-import { setAllureMeta } from "../../../tests/utils/allure";
+import { setAllureMeta } from "../../utils/allure";
 
 test.describe("Checkout Overview", () => {
   test.describe("Order Summary", () => {
