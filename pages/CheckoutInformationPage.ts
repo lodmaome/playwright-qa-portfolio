@@ -1,18 +1,8 @@
-import { type Page } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { CartPage } from "./CartPage";
 import { CheckoutOverviewPage } from "./CheckoutOverviewPage";
 
-export class CheckoutInformationPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  get title() {
-    return this.page.locator(".title");
-  }
-
+export class CheckoutInformationPage extends BasePage {
   get firstNameInput() {
     return this.page.locator("#first-name");
   }
@@ -26,7 +16,7 @@ export class CheckoutInformationPage {
   }
 
   get errorMessage() {
-    return this.page.locator("h3[data-test='error']");
+    return this.page.getByTestId("error");
   }
 
   async cancelCheckout(): Promise<CartPage> {

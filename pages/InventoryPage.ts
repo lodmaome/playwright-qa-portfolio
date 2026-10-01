@@ -1,13 +1,8 @@
-import { type Page, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { CartPage } from "./CartPage";
 
-export class InventoryPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
+export class InventoryPage extends BasePage {
   get cartBadge() {
     return this.page.locator(".shopping_cart_badge");
   }
@@ -20,10 +15,6 @@ export class InventoryPage {
     return this.page.locator(".inventory_item_price");
   }
 
-  get title() {
-    return this.page.locator(".title");
-  }
-
   async goto() {
     await this.page.goto("/inventory.html");
   }
@@ -32,11 +23,11 @@ export class InventoryPage {
     await expect(this.page).toHaveURL(/inventory/);
   }
 
-  async addProductToCart(productId: string) {
+  async addProductToCart(productName: string) {
     await this.page
       .locator(".inventory_item")
-      .filter({ hasText: productId })
-      .locator("button")
+      .filter({ hasText: productName })
+      .getByRole("button", { name: "Add to cart" })
       .click();
   }
 
@@ -44,7 +35,7 @@ export class InventoryPage {
     await this.page
       .locator(".inventory_item")
       .filter({ hasText: productName })
-      .locator("button")
+      .getByRole("button", { name: "Remove" })
       .click();
   }
 

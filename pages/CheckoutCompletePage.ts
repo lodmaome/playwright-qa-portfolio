@@ -1,17 +1,7 @@
-import { type Page } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { InventoryPage } from "./InventoryPage";
 
-export class CheckoutCompletePage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  get title() {
-    return this.page.locator(".title");
-  }
-
+export class CheckoutCompletePage extends BasePage {
   get completeHeader() {
     return this.page.locator(".complete-header");
   }

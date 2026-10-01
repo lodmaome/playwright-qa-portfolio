@@ -1,14 +1,8 @@
-import { type Page } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { CheckoutInformationPage } from "./CheckoutInformationPage";
 import { InventoryPage } from "./InventoryPage";
 
-export class CartPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
+export class CartPage extends BasePage {
   async removeProductFromCart(productName: string) {
     await this.page
       .locator(".cart_item")
@@ -23,10 +17,6 @@ export class CartPage {
 
   get cartBadge() {
     return this.page.locator(".shopping_cart_badge");
-  }
-
-  get title() {
-    return this.page.locator(".title");
   }
 
   async goToInventory(): Promise<InventoryPage> {

@@ -1,13 +1,8 @@
-import { type Page, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { InventoryPage } from "./InventoryPage";
 
-export class LoginPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
+export class LoginPage extends BasePage {
   async goto() {
     await this.page.goto("/");
   }
@@ -37,14 +32,10 @@ export class LoginPage {
   }
 
   get errorMessage() {
-    return this.page.locator("h3[data-test='error']");
+    return this.page.getByTestId("error");
   }
 
   get loginButton() {
     return this.page.locator("#login-button");
-  }
-
-  get title() {
-    return this.page.locator(".title");
   }
 }

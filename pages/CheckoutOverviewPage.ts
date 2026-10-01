@@ -1,40 +1,30 @@
-import { type Page } from "@playwright/test";
+import { BasePage } from "./BasePage";
 import { CheckoutCompletePage } from "./CheckoutCompletePage";
 import { InventoryPage } from "./InventoryPage";
 
-export class CheckoutOverviewPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  get title() {
-    return this.page.locator(".title");
-  }
-
+export class CheckoutOverviewPage extends BasePage {
   get products() {
     return this.page.locator(".inventory_item_name");
   }
 
   get itemTotal() {
-    return this.page.locator("[data-test='subtotal-label']");
+    return this.page.getByTestId("subtotal-label");
   }
 
   get tax() {
-    return this.page.locator("[data-test='tax-label']");
+    return this.page.getByTestId("tax-label");
   }
 
   get orderTotal() {
-    return this.page.locator("[data-test='total-label']");
+    return this.page.getByTestId("total-label");
   }
 
   get paymentInfo() {
-    return this.page.locator(".summary_value_label").first();
+    return this.page.getByTestId("payment-info-value");
   }
 
   get shippingInfo() {
-    return this.page.locator(".summary_value_label").nth(1);
+    return this.page.getByTestId("shipping-info-value");
   }
 
   async cancelCheckout(): Promise<InventoryPage> {
