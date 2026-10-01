@@ -23,7 +23,7 @@
  *   EC-10 Boundary: max-length username  → boundary value
  */
 
-import { env } from "../../config/env";
+import { uiEnv } from "../../config/env";
 import { Messages } from "../../constants/messages";
 
 export type LoginOutcome =
@@ -59,7 +59,7 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
   {
     id: "wrong-password",
     equivalenceClass: "EC-2: correct username, wrong password",
-    username: env.username,
+    username: uiEnv.username,
     password: "wrong_password",
     outcome: "auth_failure",
     expectedError: Messages.LOGIN_PAGE.INVALID_CREDENTIALS,
@@ -68,7 +68,7 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
     id: "wrong-username",
     equivalenceClass: "EC-3: wrong username, correct password",
     username: "no_such_user",
-    password: env.password,
+    password: uiEnv.password,
     outcome: "auth_failure",
     expectedError: Messages.LOGIN_PAGE.INVALID_CREDENTIALS,
   },
@@ -85,7 +85,7 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
     id: "empty-username",
     equivalenceClass: "EC-5: username empty",
     username: "",
-    password: env.password,
+    password: uiEnv.password,
     outcome: "validation_failure",
     expectedError: Messages.LOGIN_PAGE.EMPTY_USERNAME,
     uiOnly: true,
@@ -93,7 +93,7 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
   {
     id: "empty-password",
     equivalenceClass: "EC-6: password empty",
-    username: env.username,
+    username: uiEnv.username,
     password: "",
     outcome: "validation_failure",
     expectedError: Messages.LOGIN_PAGE.EMPTY_PASSWORD,
@@ -102,8 +102,8 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
   {
     id: "locked-user",
     equivalenceClass: "EC-7: account locked",
-    username: env.locked_out_username,
-    password: env.password,
+    username: uiEnv.lockedUsername,
+    password: uiEnv.password,
     outcome: "locked",
     expectedError: Messages.LOGIN_PAGE.LOCKED_USER,
     uiOnly: true,
@@ -128,7 +128,7 @@ export const LOGIN_SCENARIOS: readonly LoginScenario[] = [
     id: "max-length-username",
     equivalenceClass: "EC-10: boundary — 255-character username",
     username: "a".repeat(255),
-    password: env.password,
+    password: uiEnv.password,
     outcome: "auth_failure",
     expectedError: Messages.LOGIN_PAGE.INVALID_CREDENTIALS,
   },

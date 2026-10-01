@@ -1,4 +1,4 @@
-import { env } from "../../config/env";
+import { uiEnv } from "../../config/env";
 import { expect, test } from "../../fixtures/login.fixture";
 import { InventoryPage } from "../../pages/InventoryPage";
 import { setAllureMeta } from "../../tests/utils/allure";
@@ -31,10 +31,10 @@ test.describe("Keyboard Navigation", () => {
     loginPage,
   }) => {
     await loginPage.page.keyboard.press("Tab");
-    await loginPage.page.keyboard.type(env.username);
+    await loginPage.page.keyboard.type(uiEnv.username);
 
     await loginPage.page.keyboard.press("Tab");
-    await loginPage.page.keyboard.type(env.password);
+    await loginPage.page.keyboard.type(uiEnv.password);
 
     await loginPage.page.keyboard.press("Tab");
     await loginPage.page.keyboard.press("Enter");
@@ -48,7 +48,7 @@ test.describe("Keyboard Navigation", () => {
   test.fail(
     "moves focus to the error message after invalid credentials are submitted",
     async ({ loginPage }) => {
-      await loginPage.attemptLogin(env.username, "test123");
+      await loginPage.attemptLogin(uiEnv.username, "test123");
       await expect(loginPage.errorMessage).toBeFocused();
     },
   );

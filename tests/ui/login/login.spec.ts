@@ -1,4 +1,4 @@
-import { env } from "../../../config/env";
+import { uiEnv } from "../../../config/env";
 import { expect, loginTest as test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
 import { UI_LOGIN_ERROR_SCENARIOS } from "../../data/login.data";
@@ -17,7 +17,10 @@ test.describe("Login — Data-Driven", () => {
       loginPage,
     }) => {
       setAllureMeta.severity("blocker");
-      const inventoryPage = await loginPage.login(env.username, env.password);
+      const inventoryPage = await loginPage.login(
+        uiEnv.username,
+        uiEnv.password,
+      );
       await inventoryPage.assertLoaded();
     });
   });

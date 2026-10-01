@@ -1,5 +1,5 @@
 import { type APIRequestContext } from "@playwright/test";
-import { env } from "../../config/env";
+import { apiEnv } from "../../config/env";
 
 interface LoginResponse {
   accessToken: string;
@@ -8,8 +8,8 @@ interface LoginResponse {
 export async function login(request: APIRequestContext): Promise<string> {
   const response = await request.post("/auth/login", {
     data: {
-      username: env.api_username,
-      password: env.api_password,
+      username: apiEnv.username,
+      password: apiEnv.password,
     },
   });
   const body = (await response.json()) as LoginResponse;

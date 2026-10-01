@@ -1,5 +1,5 @@
 import { test as setup } from "@playwright/test";
-import { env } from "../../config/env";
+import { uiEnv } from "../../config/env";
 import { AUTH_STORAGE_STATE } from "../../config/paths";
 import { LoginPage } from "../../pages/LoginPage";
 
@@ -8,7 +8,7 @@ setup("authenticate", async ({ page }) => {
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
-  await loginPage.login(env.username, env.password);
+  await loginPage.login(uiEnv.username, uiEnv.password);
 
   await page.context().storageState({
     path: AUTH_STORAGE_STATE,

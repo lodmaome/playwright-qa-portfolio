@@ -1,4 +1,4 @@
-import { env } from "../../config/env";
+import { apiEnv } from "../../config/env";
 import { expect, test } from "../../fixtures/api.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
 import { login } from "./auth.api";
@@ -23,8 +23,8 @@ test.describe("Auth API", () => {
     test("response contains expected user fields", async ({ request }) => {
       const response = await request.post("/auth/login", {
         data: {
-          username: env.api_username,
-          password: env.api_password,
+          username: apiEnv.username,
+          password: apiEnv.password,
         },
       });
 
@@ -64,7 +64,7 @@ test.describe("Auth API", () => {
     test("returns 400 on wrong password", async ({ request }) => {
       const response = await request.post("/auth/login", {
         data: {
-          username: env.api_username,
+          username: apiEnv.username,
           password: "wrongpassword",
         },
       });

@@ -1,5 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import { env } from "./config/env";
+import { uiEnv, apiEnv } from "./config/env";
 import { AUTH_STORAGE_STATE } from "./config/paths";
 
 const browserProjects = [
@@ -31,7 +31,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: env.ui_base_url,
+    baseURL: uiEnv.baseUrl,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -41,6 +41,10 @@ export default defineConfig({
   },
 
   projects: [
+    {
+      name: "config",
+      testDir: "tests/config",
+    },
     {
       name: "ui-login",
       testDir: "tests/ui/login",
@@ -66,7 +70,7 @@ export default defineConfig({
     {
       name: "api",
       testDir: "tests/api",
-      use: { baseURL: env.api_base_url },
+      use: { baseURL: apiEnv.baseUrl },
     },
     {
       name: "accessibility",
