@@ -1,4 +1,4 @@
-// eslint.config.js — ESLint flat config for Playwright + TypeScript QA portfolio
+// eslint.config.mjs — ESLint flat config for Playwright + TypeScript QA portfolio
 import js from "@eslint/js";
 import playwright from "eslint-plugin-playwright";
 import { defineConfig } from "eslint/config";
@@ -33,8 +33,7 @@ export default defineConfig([
       "playwright/expect-expect": [
         "error",
         {
-          assertFunctionNames: ["assertLoaded", "assert*"],
-          assertFunctionPatterns: ["^assert.*"],
+          assertFunctionPatterns: ["^assert"],
         },
       ],
     },
@@ -87,7 +86,7 @@ export default defineConfig([
   },
 
   {
-    files: ["playwright.config.ts", "*.config.ts", "*.config.js"],
+    files: ["playwright.config.ts", "*.config.ts", "*.config.js", "*.config.mjs"],
     languageOptions: {
       globals: { ...globals.node },
     },
@@ -106,7 +105,7 @@ export default defineConfig([
       "coverage/**",
       "allure-report/**",
       "allure-results/**",
-      "eslint.config.js",
+      "eslint.config.mjs",
     ],
   },
 
@@ -114,7 +113,15 @@ export default defineConfig([
     settings: {
       playwright: {
         globalAliases: {
-          test: ["loginTest", "inventoryTest"],
+          test: [
+            "loginTest",
+            "inventoryTest",
+            "cartTest",
+            "apiTest",
+            "loginA11yTest",
+            "inventoryA11yTest",
+            "cartA11yTest",
+          ],
         },
       },
     },
