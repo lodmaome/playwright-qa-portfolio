@@ -13,5 +13,7 @@ export const Messages = {
   },
   CHECKOUT_COMPLETE_PAGE: {
     COMPLETE_HEADER: "Thank you for your order!",
+    COMPLETION_TEXT:
+      "Your order has been dispatched, and will arrive just as fast as the pony can get there!",
   },
 };

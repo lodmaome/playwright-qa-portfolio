@@ -24,6 +24,7 @@
  *   All missing    → first-name error shown first (UI priority)
  */
 
+import { CUSTOMER } from "../../constants/customer";
 import { Messages } from "../../constants/messages";
 
 interface CheckoutBaseScenario {
@@ -93,9 +94,9 @@ export const CHECKOUT_SUCCESS_SCENARIOS: readonly CheckoutSuccessScenario[] = [
   },
   {
     id: "typical-us-address",
-    firstName: "Maria",
-    lastName: "Joana",
-    postalCode: "12345",
+    firstName: CUSTOMER.firstName,
+    lastName: CUSTOMER.lastName,
+    postalCode: CUSTOMER.postalCode,
     rationale: "Happy path: representative US postal code.",
   },
   {

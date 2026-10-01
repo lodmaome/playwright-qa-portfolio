@@ -31,7 +31,7 @@ test.describe("Checkout Complete", () => {
     }) => {
       const subHeader = completedCheckout.completionText;
       await expect(subHeader).toHaveText(
-        "Your order has been dispatched, and will arrive just as fast as the pony can get there!",
+        Messages.CHECKOUT_COMPLETE_PAGE.COMPLETION_TEXT,
       );
     });
   });

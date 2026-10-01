@@ -36,7 +36,7 @@ export class InventoryPage {
     await this.page
       .locator(".inventory_item")
       .filter({ hasText: productId })
-      .getByRole("button")
+      .locator("button")
       .click();
   }
 
@@ -44,7 +44,7 @@ export class InventoryPage {
     await this.page
       .locator(".inventory_item")
       .filter({ hasText: productName })
-      .getByRole("button")
+      .locator("button")
       .click();
   }
 
