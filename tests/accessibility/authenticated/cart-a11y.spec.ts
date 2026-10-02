@@ -1,7 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
-import { waitForStableState } from "../../../tests/utils/retry";
 
 test.describe("Cart Accessibility", () => {
   test.beforeEach(() => {
@@ -17,7 +16,7 @@ test.describe("Cart Accessibility", () => {
   test("has no serious or critical WCAG 2.1 AA violations", async ({
     cartPageWithItem,
   }, testInfo) => {
-    await waitForStableState(cartPageWithItem.page);
+    await cartPageWithItem.page.waitForLoadState("load");
 
     const results = await new AxeBuilder({ page: cartPageWithItem.page })
       .withTags(["wcag2a", "wcag2aa"])

@@ -1,6 +1,5 @@
 import { expect, loginTest } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
-import { waitForStableState } from "../../../tests/utils/retry";
 
 loginTest.describe("Login Visual", () => {
   loginTest.beforeEach(() => {
@@ -17,7 +16,6 @@ loginTest.describe("Login Visual", () => {
     async ({ loginPage }) => {
       setAllureMeta.story("Login Page Baseline");
 
-      await waitForStableState(loginPage.page);
       await expect(loginPage.page).toHaveScreenshot("login-page.png");
     },
   );
@@ -29,7 +27,6 @@ loginTest.describe("Login Visual", () => {
 
       await loginPage.attemptLogin("invalid", "invalid");
 
-      await waitForStableState(loginPage.page);
       await expect(loginPage.page).toHaveScreenshot(
         "login-invalid-credentials.png",
       );

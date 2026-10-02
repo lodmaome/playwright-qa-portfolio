@@ -1,7 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../fixtures/login.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
-import { waitForStableState } from "../../tests/utils/retry";
 
 test.describe("Login Accessibility", () => {
   test.beforeEach(() => {
@@ -17,7 +16,7 @@ test.describe("Login Accessibility", () => {
   test("has no serious or critical WCAG 2.1 AA violations", async ({
     loginPage,
   }, testInfo) => {
-    await waitForStableState(loginPage.page);
+    await loginPage.page.waitForLoadState("load");
 
     const results = await new AxeBuilder({ page: loginPage.page })
       .withTags(["wcag2a", "wcag2aa"])
