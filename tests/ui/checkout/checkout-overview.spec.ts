@@ -1,4 +1,3 @@
-import { CUSTOMER } from "../../../constants/customer";
 import { Messages } from "../../../constants/messages";
 import { PRODUCTS } from "../../../constants/products";
 import { expect, test } from "../../../fixtures";
@@ -15,17 +14,9 @@ test.describe("Checkout Overview", () => {
     });
 
     test("lists the item that was added to the cart", async ({
-      cartPageWithItem,
+      checkoutOverviewReady,
     }) => {
-      const checkoutInformationPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInformationPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
-      await expect(checkoutOverviewPage.products).toContainText([
+      await expect(checkoutOverviewReady.products).toContainText([
         PRODUCTS.BIKE_LIGHT,
       ]);
     });
@@ -41,17 +32,10 @@ test.describe("Checkout Overview", () => {
     });
 
     test("item total is a positive dollar amount", async ({
-      cartPageWithItem,
+      checkoutOverviewReady,
     }) => {
-      const checkoutInfoPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInfoPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
-      const itemTotalText = await checkoutOverviewPage.itemTotal.textContent();
+      const itemTotalText =
+        await checkoutOverviewReady.itemTotal.textContent();
 
       const match = itemTotalText?.match(/\$(\d+\.\d{2})/);
       expect(match, "Item total label is missing a dollar amount").toBeTruthy();
@@ -61,17 +45,9 @@ test.describe("Checkout Overview", () => {
     });
 
     test("tax is a non-negative dollar amount", async ({
-      cartPageWithItem,
+      checkoutOverviewReady,
     }) => {
-      const checkoutInfoPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInfoPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
-      const taxText = await checkoutOverviewPage.tax.textContent();
+      const taxText = await checkoutOverviewReady.tax.textContent();
 
       const match = taxText?.match(/\$(\d+\.\d{2})/);
       expect(match, "Tax label is missing a dollar amount").toBeTruthy();
@@ -81,33 +57,30 @@ test.describe("Checkout Overview", () => {
     });
 
     test("order total equals the sum of item total and tax", async ({
-      cartPageWithItem,
+      checkoutOverviewReady,
     }) => {
-      const checkoutInfoPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInfoPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
+      const itemTotalText =
+        await checkoutOverviewReady.itemTotal.textContent();
+      const itemTotalMatch = itemTotalText?.match(/\$(\d+\.\d{2})/);
+      expect(
+        itemTotalMatch,
+        "Item total label is missing a dollar amount",
+      ).toBeTruthy();
+      const itemTotal = parseFloat(itemTotalMatch?.[1] ?? "0");
 
-      const itemTotal = parseFloat(
-        (await checkoutOverviewPage.itemTotal.innerText()).replace(
-          "Item total: $",
-          "",
-        ),
-      );
+      const taxText = await checkoutOverviewReady.tax.textContent();
+      const taxMatch = taxText?.match(/\$(\d+\.\d{2})/);
+      expect(taxMatch, "Tax label is missing a dollar amount").toBeTruthy();
+      const tax = parseFloat(taxMatch?.[1] ?? "0");
 
-      const tax = parseFloat(
-        (await checkoutOverviewPage.tax.innerText()).replace("Tax: $", ""),
-      );
-
-      const orderTotal = parseFloat(
-        (await checkoutOverviewPage.orderTotal.innerText()).replace(
-          "Total: $",
-          "",
-        ),
-      );
+      const orderTotalText =
+        await checkoutOverviewReady.orderTotal.textContent();
+      const orderTotalMatch = orderTotalText?.match(/\$(\d+\.\d{2})/);
+      expect(
+        orderTotalMatch,
+        "Order total label is missing a dollar amount",
+      ).toBeTruthy();
+      const orderTotal = parseFloat(orderTotalMatch?.[1] ?? "0");
 
       expect(orderTotal).toBeCloseTo(itemTotal + tax, 2);
     });
@@ -122,34 +95,20 @@ test.describe("Checkout Overview", () => {
       });
     });
 
-    test("shows a non-empty payment information label", async ({
-      cartPageWithItem,
+    test("shows the fixed payment information label", async ({
+      checkoutOverviewReady,
     }) => {
-      const checkoutInfoPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInfoPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
-      const paymentValue = checkoutOverviewPage.paymentInfo;
-      await expect(paymentValue).not.toBeEmpty();
+      await expect(checkoutOverviewReady.paymentInfo).toHaveText(
+        Messages.CHECKOUT_OVERVIEW_PAGE.PAYMENT_INFO,
+      );
     });
 
-    test("shows a non-empty shipping information label", async ({
-      cartPageWithItem,
+    test("shows the fixed shipping information label", async ({
+      checkoutOverviewReady,
     }) => {
-      const checkoutInfoPage = await cartPageWithItem.goToCheckout();
-      const checkoutOverviewPage =
-        await checkoutInfoPage.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
-      const shippingValue = checkoutOverviewPage.shippingInfo;
-      await expect(shippingValue).not.toBeEmpty();
+      await expect(checkoutOverviewReady.shippingInfo).toHaveText(
+        Messages.CHECKOUT_OVERVIEW_PAGE.SHIPPING_INFO,
+      );
     });
   });
 
@@ -163,17 +122,10 @@ test.describe("Checkout Overview", () => {
     });
 
     test("returns to the inventory page when the cancel button is clicked", async ({
-      checkoutReady,
+      checkoutOverviewReady,
     }) => {
-      const checkoutOverviewPage =
-        await checkoutReady.completePersonalInformation(
-          CUSTOMER.firstName,
-          CUSTOMER.lastName,
-          CUSTOMER.postalCode,
-        );
-
       await test.step("cancel from overview and verify redirect to inventory", async () => {
-        const inventoryPage = await checkoutOverviewPage.cancelCheckout();
+        const inventoryPage = await checkoutOverviewReady.cancelCheckout();
         await expect(inventoryPage.title).toHaveText("Products");
       });
     });

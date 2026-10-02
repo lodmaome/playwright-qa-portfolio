@@ -3,7 +3,7 @@ import { uiEnv } from "../../config/env";
 import { AUTH_STORAGE_STATE } from "../../config/paths";
 import { LoginPage } from "../../pages/LoginPage";
 
-// eslint-disable-next-line playwright/expect-expect
+// eslint-disable-next-line playwright/expect-expect -- LoginPage.login() asserts the post-login URL internally
 setup("authenticate", async ({ page }) => {
   const loginPage = new LoginPage(page);
 

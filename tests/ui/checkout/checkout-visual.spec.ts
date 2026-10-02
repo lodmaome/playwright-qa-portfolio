@@ -1,5 +1,4 @@
-import { CUSTOMER } from "../../../constants/customer";
-import { expect, test } from "../../../fixtures/";
+import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
 
 test.describe("Checkout Visual", () => {
@@ -19,15 +18,11 @@ test.describe("Checkout Visual", () => {
   });
 
   test("matches the baseline snapshot of the checkout overview page", async ({
-    checkoutReady,
+    checkoutOverviewReady,
   }) => {
-    await checkoutReady.completePersonalInformation(
-      CUSTOMER.firstName,
-      CUSTOMER.lastName,
-      CUSTOMER.postalCode,
+    await expect(checkoutOverviewReady.page).toHaveScreenshot(
+      "checkout-overview.png",
     );
-
-    await expect(checkoutReady.page).toHaveScreenshot("checkout-overview.png");
   });
 
   test("matches the baseline snapshot of the checkout complete page", async ({

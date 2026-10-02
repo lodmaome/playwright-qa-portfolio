@@ -75,9 +75,12 @@ run.
 
 ## Known limitations
 
-- **LCP performance** — `PerformanceObserver` inside `page.evaluate()` is sensitive to
-  headless rendering speed and CI container CPU. Consider `test.skip(!!process.env.CI, "...")`
-  if it proves flaky.
+- **Performance budgets (TTFB/DCL/load, LCP)** — both performance tests assert hard
+  millisecond thresholds against the live, third-party `saucedemo.com` over the real
+  network, and the LCP test additionally reads a `PerformanceObserver` entry inside
+  `page.evaluate()`. Both are sensitive to headless rendering speed and CI container
+  CPU/network variance. Consider `test.skip(!!process.env.CI, "...")` on either if it
+  proves flaky in practice.
 - **Session expiry** — `storageState` is written once per run by `ui-setup`. If a very long
   run causes the session to expire mid-suite, authenticated tests fail with redirect errors.
   Re-running regenerates the token.

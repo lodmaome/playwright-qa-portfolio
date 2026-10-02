@@ -16,4 +16,8 @@ export const Messages = {
     COMPLETION_TEXT:
       "Your order has been dispatched, and will arrive just as fast as the pony can get there!",
   },
+  CHECKOUT_OVERVIEW_PAGE: {
+    PAYMENT_INFO: "SauceCard #31337",
+    SHIPPING_INFO: "Free Pony Express Delivery!",
+  },
 };

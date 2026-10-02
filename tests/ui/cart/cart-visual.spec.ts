@@ -1,4 +1,4 @@
-import { expect, cartTest as test } from "../../../fixtures/";
+import { expect, cartTest as test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
 
 test.describe("Cart Visual", () => {
