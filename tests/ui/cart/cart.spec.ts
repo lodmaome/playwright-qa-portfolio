@@ -38,13 +38,9 @@ cartTest.describe("Cart", () => {
         await cartTest.step(
           "verify all 5 products appear in cart",
           async () => {
-            await expect(cartPageWithMultipleItems.products).toContainText([
-              PRODUCTS.BIKE_LIGHT,
-              PRODUCTS.BACKPACK,
-              PRODUCTS.T_SHIRT,
-              PRODUCTS.JACKET,
-              PRODUCTS.ONESIE,
-            ]);
+            await expect(cartPageWithMultipleItems.products).toContainText(
+              Object.values(PRODUCTS),
+            );
           },
         );
       },

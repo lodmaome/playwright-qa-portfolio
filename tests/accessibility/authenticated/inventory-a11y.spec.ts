@@ -43,12 +43,18 @@ test.describe("Inventory Accessibility", () => {
   test("all product images have non-empty alt text", async ({
     inventoryPage,
   }) => {
-    const images = inventoryPage.page.getByText(".inventory_item img");
+    // getByRole("img") would exclude <img alt=""> (it maps to role "presentation",
+    // not "img"), making this check vacuously pass on the bug it exists to catch.
+    // eslint-disable-next-line playwright/no-raw-locators
+    const images = inventoryPage.page.locator(".inventory_item img");
     const count = await images.count();
 
     for (let i = 0; i < count; i++) {
-      const alt = images.nth(i);
-      await expect(alt, `Image at index ${i} is missing alt text`).toHaveAttribute("alt", );
+      const image = images.nth(i);
+      await expect(
+        image,
+        `Image at index ${i} is missing non-empty alt text`,
+      ).toHaveAttribute("alt", /.+/);
     }
   });
 });

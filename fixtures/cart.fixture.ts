@@ -11,9 +11,7 @@ interface CartFixtures {
 
 export const cartTest = inventoryTest.extend<CartFixtures>({
   cartPage: async ({ inventoryPage }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
-      layer: "ui",
+    setAllureMeta.uiBundle({
       severity: "normal",
       feature: "Shopping Cart",
       story: "Empty Cart",
@@ -25,11 +23,9 @@ export const cartTest = inventoryTest.extend<CartFixtures>({
   },
 
   cartPageWithItem: async ({ inventoryPageWithItem }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Shopping Cart",
       story: "Cart with Item",
-      layer: "ui",
       severity: "critical",
       tags: ["cart", "item-management"],
     });
@@ -39,20 +35,16 @@ export const cartTest = inventoryTest.extend<CartFixtures>({
   },
 
   cartPageWithMultipleItems: async ({ inventoryPage }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Shopping Cart",
       story: "Cart with Multiple Items",
-      layer: "ui",
       severity: "normal",
       tags: ["cart", "bulk"],
     });
 
-    await inventoryPage.addProductToCart(PRODUCTS.BIKE_LIGHT);
-    await inventoryPage.addProductToCart(PRODUCTS.BACKPACK);
-    await inventoryPage.addProductToCart(PRODUCTS.T_SHIRT);
-    await inventoryPage.addProductToCart(PRODUCTS.JACKET);
-    await inventoryPage.addProductToCart(PRODUCTS.ONESIE);
+    for (const product of Object.values(PRODUCTS)) {
+      await inventoryPage.addProductToCart(product);
+    }
     const cartPage = await inventoryPage.goToCart();
     await use(cartPage);
   },

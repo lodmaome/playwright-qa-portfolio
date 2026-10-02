@@ -113,15 +113,7 @@ export default defineConfig([
     settings: {
       playwright: {
         globalAliases: {
-          test: [
-            "loginTest",
-            "inventoryTest",
-            "cartTest",
-            "apiTest",
-            "loginA11yTest",
-            "inventoryA11yTest",
-            "cartA11yTest",
-          ],
+          test: ["loginTest", "inventoryTest", "cartTest", "apiTest"],
         },
       },
     },

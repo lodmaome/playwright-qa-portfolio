@@ -3,6 +3,42 @@ import * as allure from "allure-js-commons";
 export type Severity = "blocker" | "critical" | "normal" | "minor" | "trivial";
 export type Layer = "ui" | "api" | "unit" | "accessibility" | "visual";
 
+interface BundleOptions {
+  epic?: string;
+  feature?: string;
+  story?: string;
+  severity?: Severity;
+  owner?: string;
+  layer?: Layer;
+  tags?: string[];
+}
+
+function applyBundle(opts: BundleOptions): void {
+  if (opts.epic) {
+    allure.epic(opts.epic);
+  }
+  if (opts.feature) {
+    allure.feature(opts.feature);
+  }
+  if (opts.story) {
+    allure.story(opts.story);
+  }
+  if (opts.severity) {
+    allure.severity(opts.severity);
+  }
+  if (opts.owner) {
+    allure.owner(opts.owner);
+  }
+  if (opts.layer) {
+    allure.label("layer", opts.layer);
+  }
+  if (opts.tags) {
+    for (const v of opts.tags) {
+      allure.tag(v);
+    }
+  }
+}
+
 export const setAllureMeta = {
   /** Top-level grouping — maps to an Allure Epic. */
   epic: (value: string) => allure.epic(value),
@@ -21,37 +57,15 @@ export const setAllureMeta = {
   tms: (url: string, name?: string) => allure.tms(url, name),
   description: (markdown: string) => allure.description(markdown),
 
-  bundle: (opts: {
-    epic?: string;
-    feature?: string;
-    story?: string;
-    severity?: Severity;
-    owner?: string;
-    layer?: Layer;
-    tags?: string[];
-  }) => {
-    if (opts.epic) {
-      allure.epic(opts.epic);
-    }
-    if (opts.feature) {
-      allure.feature(opts.feature);
-    }
-    if (opts.story) {
-      allure.story(opts.story);
-    }
-    if (opts.severity) {
-      allure.severity(opts.severity);
-    }
-    if (opts.owner) {
-      allure.owner(opts.owner);
-    }
-    if (opts.layer) {
-      allure.label("layer", opts.layer);
-    }
-    if (opts.tags) {
-      for (const v of opts.tags) {
-        allure.tag(v);
-      }
-    }
+  bundle: (opts: BundleOptions) => {
+    applyBundle(opts);
+  },
+
+  /**
+   * Same as `bundle`, but defaults `epic`/`layer` to this project's
+   * SauceDemo UI suite — every UI fixture bundle repeats the same two values.
+   */
+  uiBundle: (opts: Omit<BundleOptions, "epic" | "layer">) => {
+    applyBundle({ epic: "SauceDemo UI", layer: "ui", ...opts });
   },
 };

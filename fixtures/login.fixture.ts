@@ -8,10 +8,8 @@ interface LoginFixtures {
 
 export const test = base.extend<LoginFixtures>({
   loginPage: async ({ page }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Authentication",
-      layer: "ui",
       severity: "normal",
       tags: ["login", "auth"],
     });

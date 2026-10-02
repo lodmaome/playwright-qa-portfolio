@@ -11,11 +11,9 @@ interface CheckoutFixtures {
 
 export const test = cartTest.extend<CheckoutFixtures>({
   checkoutReady: async ({ cartPageWithItem }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Checkout",
       story: "Checkout Information",
-      layer: "ui",
       severity: "blocker",
       tags: ["checkout", "form-validation"],
     });
@@ -24,19 +22,16 @@ export const test = cartTest.extend<CheckoutFixtures>({
     await use(checkoutInformationPage);
   },
 
-  completedCheckout: async ({ cartPageWithItem }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+  completedCheckout: async ({ checkoutReady }, use) => {
+    setAllureMeta.uiBundle({
       feature: "Checkout",
       story: "Order Complete",
-      layer: "ui",
       severity: "blocker",
       tags: ["checkout", "order-completion", "happy-path"],
     });
 
-    const checkoutInformationPage = await cartPageWithItem.goToCheckout();
     const checkoutOverviewPage =
-      await checkoutInformationPage.completePersonalInformation(
+      await checkoutReady.completePersonalInformation(
         CUSTOMER.firstName,
         CUSTOMER.lastName,
         CUSTOMER.postalCode,

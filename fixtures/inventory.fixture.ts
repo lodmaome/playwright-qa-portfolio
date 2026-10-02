@@ -10,32 +10,30 @@ interface InventoryFixtures {
 
 export const inventoryTest = base.extend<InventoryFixtures>({
   inventoryPage: async ({ page }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Product Catalog",
       story: "Browse Products",
-      layer: "ui",
       severity: "normal",
     });
 
     const inventoryPage = new InventoryPage(page);
     await inventoryPage.goto();
+    await inventoryPage.assertLoaded();
 
     await use(inventoryPage);
   },
 
   inventoryPageWithItem: async ({ page }, use) => {
-    setAllureMeta.bundle({
-      epic: "SauceDemo UI",
+    setAllureMeta.uiBundle({
       feature: "Product Catalog",
       story: "Add to Cart",
-      layer: "ui",
       severity: "normal",
       tags: ["inventory", "add-to-cart"],
     });
 
     const inventoryPage = new InventoryPage(page);
     await inventoryPage.goto();
+    await inventoryPage.assertLoaded();
     await inventoryPage.addProductToCart(PRODUCTS.BIKE_LIGHT);
 
     await use(inventoryPage);
