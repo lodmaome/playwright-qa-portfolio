@@ -1,8 +1,11 @@
 import { expect } from "@playwright/test";
 import { test } from "../../fixtures/api.fixture";
+import { type ApiClient } from "./apiClient";
 import { setAllureMeta } from "../../tests/utils/allure";
 import {
-  PAGINATION_SCENARIOS,
+  PAGINATION_EXACT_SCENARIOS,
+  PAGINATION_MAX_SCENARIOS,
+  PAGINATION_NONEMPTY_SCENARIOS,
   SEARCH_SCENARIOS,
   SORT_SCENARIOS,
   type SearchableProduct,
@@ -22,6 +25,49 @@ interface PaginatedProducts {
   limit: number;
 }
 
+/** Issues the GET /products request and asserts the common response shape. */
+async function fetchProductsPage(
+  authApi: ApiClient,
+  params: { limit?: number; skip?: number },
+  expectedStatus: number,
+  expectedSkip: number | undefined,
+  expectedLimit: number | undefined,
+): Promise<PaginatedProducts> {
+  const qs = new URLSearchParams();
+
+  if (params.limit !== undefined) {
+    qs.set("limit", String(params.limit));
+  }
+  if (params.skip !== undefined) {
+    qs.set("skip", String(params.skip));
+  }
+
+  const qsString = qs.toString();
+  const response = await authApi.get(
+    `/products${qsString ? `?${qsString}` : ""}`,
+  );
+
+  expect(response.status()).toBe(expectedStatus);
+
+  const body = (await response.json()) as PaginatedProducts;
+
+  expect(body).toMatchObject({
+    products: expect.any(Array),
+    total: expect.any(Number),
+    skip: expect.any(Number),
+    limit: expect.any(Number),
+  });
+
+  if (expectedSkip !== undefined) {
+    expect(body.skip).toBe(expectedSkip);
+  }
+  if (expectedLimit !== undefined) {
+    expect(body.limit).toBe(expectedLimit);
+  }
+
+  return body;
+}
+
 test.describe("Products API — Data-Driven", () => {
   test.describe("GET /products — Pagination", () => {
     test.beforeEach(() => {
@@ -32,67 +78,62 @@ test.describe("Products API — Data-Driven", () => {
       });
     });
 
-    for (const scenario of PAGINATION_SCENARIOS) {
-      test(`[${scenario.id}] ${scenario.description} — ${scenario.rationale}`, async ({
-        authApi,
-      }) => {
-        const params = new URLSearchParams();
+    test.describe("exact count expected", () => {
+      for (const scenario of PAGINATION_EXACT_SCENARIOS) {
+        test(`[${scenario.id}] ${scenario.description} — ${scenario.rationale}`, async ({
+          authApi,
+        }) => {
+          const body = await fetchProductsPage(
+            authApi,
+            scenario.params,
+            scenario.expectedStatus,
+            scenario.expectedSkip,
+            scenario.expectedLimit,
+          );
 
-        // eslint-disable-next-line playwright/no-conditional-in-test
-        if (scenario.params.limit !== undefined) {
-          params.set("limit", String(scenario.params.limit));
-        }
-        // eslint-disable-next-line playwright/no-conditional-in-test
-        if (scenario.params.skip !== undefined) {
-          params.set("skip", String(scenario.params.skip));
-        }
-
-        const qs = params.toString();
-        const response = await authApi.get(`/products${qs ? `?${qs}` : ""}`);
-
-        expect(response.status()).toBe(scenario.expectedStatus);
-
-        const body = (await response.json()) as PaginatedProducts;
-
-        expect(body).toMatchObject({
-          products: expect.any(Array),
-          total: expect.any(Number),
-          skip: expect.any(Number),
-          limit: expect.any(Number),
+          expect(body.products).toHaveLength(scenario.expectedCount);
         });
+      }
+    });
 
-        // eslint-disable-next-line playwright/no-conditional-in-test
-        switch (scenario.countAssertion.kind) {
-          case "exact":
-            // eslint-disable-next-line playwright/no-conditional-expect
-            expect(body.products).toHaveLength(scenario.countAssertion.count);
-            break;
-          case "max":
-            // eslint-disable-next-line playwright/no-conditional-expect
-            expect(body.products.length).toBeGreaterThan(0);
-            // eslint-disable-next-line playwright/no-conditional-expect
-            expect(body.products.length).toBeLessThanOrEqual(
-              scenario.countAssertion.max,
-            );
-            break;
-          case "nonEmpty":
-            // eslint-disable-next-line playwright/no-conditional-expect
-            expect(body.products.length).toBeGreaterThan(0);
-            break;
-        }
+    test.describe("bounded by a maximum (catalogue size unknown)", () => {
+      for (const scenario of PAGINATION_MAX_SCENARIOS) {
+        test(`[${scenario.id}] ${scenario.description} — ${scenario.rationale}`, async ({
+          authApi,
+        }) => {
+          const body = await fetchProductsPage(
+            authApi,
+            scenario.params,
+            scenario.expectedStatus,
+            scenario.expectedSkip,
+            scenario.expectedLimit,
+          );
 
-        // eslint-disable-next-line playwright/no-conditional-in-test
-        if (scenario.expectedSkip !== undefined) {
-          // eslint-disable-next-line playwright/no-conditional-expect
-          expect(body.skip).toBe(scenario.expectedSkip);
-        }
-        // eslint-disable-next-line playwright/no-conditional-in-test
-        if (scenario.expectedLimit !== undefined) {
-          // eslint-disable-next-line playwright/no-conditional-expect
-          expect(body.limit).toBe(scenario.expectedLimit);
-        }
-      });
-    }
+          expect(body.products.length).toBeGreaterThan(0);
+          expect(body.products.length).toBeLessThanOrEqual(
+            scenario.maxCount,
+          );
+        });
+      }
+    });
+
+    test.describe("no limit set — just non-empty", () => {
+      for (const scenario of PAGINATION_NONEMPTY_SCENARIOS) {
+        test(`[${scenario.id}] ${scenario.description} — ${scenario.rationale}`, async ({
+          authApi,
+        }) => {
+          const body = await fetchProductsPage(
+            authApi,
+            scenario.params,
+            scenario.expectedStatus,
+            scenario.expectedSkip,
+            scenario.expectedLimit,
+          );
+
+          expect(body.products.length).toBeGreaterThan(0);
+        });
+      }
+    });
   });
 
   test.describe("GET /products — Sorting", () => {

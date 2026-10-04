@@ -12,6 +12,14 @@ export async function login(request: APIRequestContext): Promise<string> {
       password: apiEnv.password,
     },
   });
-  const body = (await response.json()) as LoginResponse;
-  return body.accessToken;
+
+  const body: unknown = await response.json();
+
+  if (!response.ok()) {
+    throw new Error(
+      `login failed with status ${response.status()}: ${JSON.stringify(body)}`,
+    );
+  }
+
+  return (body as LoginResponse).accessToken;
 }

@@ -3,7 +3,7 @@
  * malformed payloads.  These tests do not call the network.
  */
 
-import { expect, test } from "../../../fixtures/api.fixture";
+import { expect, test } from "@playwright/test";
 import { setAllureMeta } from "../../../tests/utils/allure";
 import { ProductListSchema, ProductSchema } from "../schemas/product.schema";
 import { UserSchema } from "../schemas/user.schema";

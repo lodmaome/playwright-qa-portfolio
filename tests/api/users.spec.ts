@@ -1,3 +1,10 @@
+/**
+ * Note: DummyJSON is stateless — the POST/PATCH/DELETE tests below assert the
+ * response the API returns for a mutation, but the mutation itself is not
+ * actually persisted server-side. A follow-up GET for the same resource would
+ * still return the original, unmodified data.
+ */
+
 import { z } from "zod";
 import { expect, test } from "../../fixtures/api.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";

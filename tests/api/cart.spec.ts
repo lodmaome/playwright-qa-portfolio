@@ -1,3 +1,10 @@
+/**
+ * Note: DummyJSON is stateless — the POST/PATCH/DELETE tests below assert the
+ * response the API returns for a mutation, but the mutation itself is not
+ * actually persisted server-side. A follow-up GET for the same resource would
+ * still return the original, unmodified data.
+ */
+
 import { expect, test } from "../../fixtures/api.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
 
@@ -229,7 +236,6 @@ test.describe("Carts API", () => {
     test("deletes a cart and returns the deleted record", async ({
       authApi,
     }) => {
-      // DummyJSON is stateless
       const response = await authApi.delete("/carts/1");
 
       expect(response.status()).toBe(200);

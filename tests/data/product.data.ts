@@ -15,44 +15,54 @@
  *
  * Count assertion strategy
  * ────────────────────────
- *   { kind: "exact", count: N } — catalogue guaranteed to have >= N items
- *   { kind: "max",   max: N }   — limit set but catalogue size unknown
- *   { kind: "nonEmpty" }        — no limit set; just assert something returned
+ * Split into three datasets by assertion shape, rather than one dataset with
+ * a `kind` field the test branches on — each dataset drives its own
+ * unconditional assertion:
+ *   PAGINATION_EXACT_SCENARIOS    — catalogue guaranteed to have >= N items
+ *   PAGINATION_MAX_SCENARIOS      — limit set but catalogue size unknown
+ *   PAGINATION_NONEMPTY_SCENARIOS — no limit set; just assert something returned
  */
 
 import { z } from "zod";
 
-type CountAssertion =
-  | { kind: "exact"; count: number }
-  | { kind: "max"; max: number }
-  | { kind: "nonEmpty" };
-
-export interface PaginationScenario {
+interface PaginationScenarioBase {
   id: string;
   description: string;
   params: { limit?: number; skip?: number };
   expectedStatus: number;
   rationale: string;
-  countAssertion: CountAssertion;
   expectedSkip?: number;
   expectedLimit?: number;
 }
 
-export const PAGINATION_SCENARIOS: readonly PaginationScenario[] = [
-  {
-    id: "default",
-    description: "no params — uses API defaults",
-    params: {},
-    expectedStatus: 200,
-    countAssertion: { kind: "nonEmpty" },
-    rationale: "Happy path; establishes the baseline response shape.",
-  },
+export interface PaginationExactScenario extends PaginationScenarioBase {
+  expectedCount: number;
+}
+
+export interface PaginationMaxScenario extends PaginationScenarioBase {
+  maxCount: number;
+}
+
+export type PaginationNonEmptyScenario = PaginationScenarioBase;
+
+export const PAGINATION_NONEMPTY_SCENARIOS: readonly PaginationNonEmptyScenario[] =
+  [
+    {
+      id: "default",
+      description: "no params — uses API defaults",
+      params: {},
+      expectedStatus: 200,
+      rationale: "Happy path; establishes the baseline response shape.",
+    },
+  ];
+
+export const PAGINATION_EXACT_SCENARIOS: readonly PaginationExactScenario[] = [
   {
     id: "limit-1",
     description: "limit=1 — minimum valid page size",
     params: { limit: 1 },
     expectedStatus: 200,
-    countAssertion: { kind: "exact", count: 1 },
+    expectedCount: 1,
     expectedLimit: 1,
     rationale: "Lower boundary of valid limit values.",
   },
@@ -61,7 +71,7 @@ export const PAGINATION_SCENARIOS: readonly PaginationScenario[] = [
     description: "limit=5 skip=0 — first page, explicit",
     params: { limit: 5, skip: 0 },
     expectedStatus: 200,
-    countAssertion: { kind: "exact", count: 5 },
+    expectedCount: 5,
     expectedSkip: 0,
     expectedLimit: 5,
     rationale: "Explicit first-page request; skip=0 is the lower boundary.",
@@ -71,22 +81,25 @@ export const PAGINATION_SCENARIOS: readonly PaginationScenario[] = [
     description: "limit=5 skip=10 — mid-catalogue offset",
     params: { limit: 5, skip: 10 },
     expectedStatus: 200,
-    countAssertion: { kind: "exact", count: 5 },
+    expectedCount: 5,
     expectedSkip: 10,
     expectedLimit: 5,
     rationale: "Representative mid-range skip — verifies offset arithmetic.",
   },
+] as const;
+
+export const PAGINATION_MAX_SCENARIOS: readonly PaginationMaxScenario[] = [
   {
     id: "limit-100",
     description: "limit=100 — large single-page request",
     params: { limit: 100 },
     expectedStatus: 200,
-    countAssertion: { kind: "max", max: 100 },
+    maxCount: 100,
     expectedLimit: 100,
     rationale:
       "Upper boundary of practical limit values; catalogue may be < 100.",
   },
-] as const;
+];
 
 export type SortOrder = "asc" | "desc";
 
