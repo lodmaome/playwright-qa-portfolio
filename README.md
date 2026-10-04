@@ -14,7 +14,7 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 | UI E2E | Playwright POM + fixtures | 7 | `tests/ui/` |
 | API contract | APIRequestContext + Zod | 6 | `tests/api/` |
 | Visual regression | Playwright snapshots | 3 | `*-visual.spec.ts` |
-| Accessibility | axe-core (WCAG 2.1 AA) | 4 | `tests/accessibility/` |
+| Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | `tests/accessibility/` |
 
 ## Quick start
 

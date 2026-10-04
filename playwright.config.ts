@@ -75,7 +75,7 @@ export default defineConfig({
     {
       name: "accessibility",
       testDir: "tests/accessibility",
-      testMatch: ["**/login-a11y.spec.ts", "**/keyboard-navigation.spec.ts"],
+      testIgnore: ["**/authenticated/**"],
     },
     {
       name: "accessibility-authenticated",

@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../fixtures/login.fixture";
 import { setAllureMeta } from "../../tests/utils/allure";
+import { scanWcag21Aa } from "./axe.helper";
 
 test.describe("Login Accessibility", () => {
   test.beforeEach(() => {
@@ -18,13 +18,7 @@ test.describe("Login Accessibility", () => {
   }, testInfo) => {
     await loginPage.page.waitForLoadState("load");
 
-    const results = await new AxeBuilder({ page: loginPage.page })
-      .withTags(["wcag2a", "wcag2aa"])
-      .analyze();
-
-    const criticalIssues = results.violations.filter((v) =>
-      ["critical", "serious"].includes(v.impact ?? ""),
-    );
+    const { results, blockingViolations } = await scanWcag21Aa(loginPage.page);
 
     await testInfo.attach("axe-login-report", {
       body: JSON.stringify(results, null, 2),
@@ -32,9 +26,9 @@ test.describe("Login Accessibility", () => {
     });
 
     expect(
-      criticalIssues,
-      `Found ${criticalIssues.length} critical violations:\n` +
-        criticalIssues.map((v) => `${v.id}: ${v.description}`).join("\n"),
+      blockingViolations,
+      `Found ${blockingViolations.length} critical violations:\n` +
+        blockingViolations.map((v) => `${v.id}: ${v.description}`).join("\n"),
     ).toHaveLength(0);
   });
 });

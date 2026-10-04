@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
+import { scanWcag21Aa } from "../axe.helper";
 
 test.describe("Cart Accessibility", () => {
   test.beforeEach(() => {
@@ -18,12 +18,8 @@ test.describe("Cart Accessibility", () => {
   }, testInfo) => {
     await cartPageWithItem.page.waitForLoadState("load");
 
-    const results = await new AxeBuilder({ page: cartPageWithItem.page })
-      .withTags(["wcag2a", "wcag2aa"])
-      .analyze();
-
-    const criticalIssues = results.violations.filter((v) =>
-      ["critical", "serious"].includes(v.impact ?? ""),
+    const { results, blockingViolations } = await scanWcag21Aa(
+      cartPageWithItem.page,
     );
 
     await testInfo.attach("axe-cart-report", {
@@ -32,9 +28,9 @@ test.describe("Cart Accessibility", () => {
     });
 
     expect(
-      criticalIssues,
-      `Found ${criticalIssues.length} critical violations:\n` +
-        criticalIssues.map((v) => `${v.id}: ${v.description}`).join("\n"),
+      blockingViolations,
+      `Found ${blockingViolations.length} critical violations:\n` +
+        blockingViolations.map((v) => `${v.id}: ${v.description}`).join("\n"),
     ).toHaveLength(0);
   });
 });

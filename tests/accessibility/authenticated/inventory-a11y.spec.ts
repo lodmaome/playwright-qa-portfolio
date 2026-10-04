@@ -1,6 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "../../../fixtures";
 import { setAllureMeta } from "../../../tests/utils/allure";
+import { scanWcag21Aa } from "../axe.helper";
 
 test.describe("Inventory Accessibility", () => {
   test.beforeEach(() => {
@@ -18,13 +18,8 @@ test.describe("Inventory Accessibility", () => {
   }, testInfo) => {
     await inventoryPage.page.waitForLoadState("load");
 
-    const results = await new AxeBuilder({ page: inventoryPage.page })
-      .withTags(["wcag2a", "wcag2aa"])
-      .exclude(".product_sort_container") // third-party app violation
-      .analyze();
-
-    const criticalIssues = results.violations.filter((v) =>
-      ["critical", "serious"].includes(v.impact ?? ""),
+    const { results, blockingViolations } = await scanWcag21Aa(
+      inventoryPage.page,
     );
 
     await testInfo.attach("axe-inventory-report", {
@@ -33,9 +28,9 @@ test.describe("Inventory Accessibility", () => {
     });
 
     expect(
-      criticalIssues,
-      `Found ${criticalIssues.length} critical violations:\n` +
-        criticalIssues.map((v) => `${v.id}: ${v.description}`).join("\n"),
+      blockingViolations,
+      `Found ${blockingViolations.length} critical violations:\n` +
+        blockingViolations.map((v) => `${v.id}: ${v.description}`).join("\n"),
     ).toHaveLength(0);
   });
 
