@@ -18,10 +18,12 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 
 ## Quick start
 
+Requires Node 22 (pinned in `.nvmrc`).
+
 ```bash
 cp .env.example .env      # fill in credentials — see .env.example for hints
 npm ci
-npx playwright install
+npx playwright install --with-deps   # --with-deps installs system libraries on Linux
 npx playwright test       # all projects
 ```
 
@@ -29,14 +31,15 @@ npx playwright test       # all projects
 
 | Project | What it runs | Needs auth? |
 |---|---|---|
+| `config` | Config loading and env validation (6 tests) | No |
 | `ui-login` | Login page UI tests | No |
 | `ui-setup` | Auth setup — writes `.auth/login.json` | — |
-| `ui-e2e-chromium` | Full UI suite on Chrome | Yes (depends on `ui-setup`) |
-| `ui-e2e-firefox` | Full UI suite on Firefox | Yes (depends on `ui-setup`)|
-| `ui-e2e-webkit` | Full UI suite on Safari/WebKit | Yes (depends on `ui-setup`)|
+| `ui-e2e-chromium` | Authenticated UI suite on Chrome | Yes (depends on `ui-setup`) |
+| `ui-e2e-firefox` | Authenticated UI suite on Firefox | Yes (depends on `ui-setup`)|
+| `ui-e2e-webkit` | Authenticated UI suite on Safari/WebKit | Yes (depends on `ui-setup`)|
 | `api` | API contract tests (DummyJSON) | No browser |
 | `accessibility` | Unauthenticated a11y + keyboard nav | No |
-| `accessibility-authenticated` | Cart + inventory a11y | Yes |
+| `accessibility-authenticated` | Cart + inventory a11y and keyboard operability | Yes |
 | `visual` | Visual snapshot regression | Yes |
 
 The three browser E2E projects intentionally exclude login-flow and visual

@@ -14,6 +14,7 @@ ui-setup (auth.setup.ts)
 ui-login          (no dependency — tests the login page itself)
 api               (no browser — uses APIRequestContext)
 accessibility     (unauthenticated pages only)
+config            (no browser — tests config/env.ts loading and validation)
 ```
 
 ### Authentication flow
@@ -22,8 +23,9 @@ accessibility     (unauthenticated pages only)
 authenticated browser state for dependent projects.
 
 The login form is exercised independently by the `ui-login` project and by
-the `login-a11y`and `login-visual` specs. These tests exercise login behavior
-directly rather than using the setup project as their test target.
+the `login-a11y`, `login-visual`, and `keyboard-navigation` specs. These tests
+exercise login behavior directly rather than using the setup project as their
+test target.
 
 The authenticated E2E projects depend on `ui-setup` and reuse the generated
 storage state.
@@ -48,8 +50,9 @@ Login UI behaviour is tested separately in the isolated `ui-login` project.
 ## Why fixture composition instead of `beforeEach`
 
 `beforeEach` hooks scatter setup logic across files and make state reuse
-impossible. The fixture chain — `inventoryTest → cartTest → checkoutTest`
-— means any test at any level gets exactly the state it needs, nothing more.
+impossible. The fixture chain — `inventoryTest → cartTest → test` (the checkout
+fixtures in `fixtures/checkout.fixture.ts`) — means any test at any level gets
+exactly the state it needs, nothing more.
 
 Every navigation method returns the next Page Object (`goToCart()` returns
 `CartPage`), so tests read like a user story:
@@ -79,19 +82,21 @@ schemas assert the full shape — type, constraints, optionality — and fail wi
 a descriptive error that names the offending field.
 
 The schemas in `tests/api/schemas/` are also the canonical documentation of
-what the API is expected to return. Error response bodies are schema-validated
-too, not just status codes, so a change from `{ message }` to `{ error }` is
-caught immediately.
+what the API is expected to return. Schemas cover the product and user
+resources. Error responses are checked for a `message` field with
+`toMatchObject`, not with a schema, so a change from `{ message }` to `{ error }`
+is caught by those assertions rather than by a shared schema.
 
 ---
 
 ## Why two base URLs, one config
 
-UI projects inherit `UI_BASE_URL` from the global `use.baseURL` in
-`playwright.config.ts`. The `api` project overrides `baseURL` with
-`API_BASE_URL` at the project level. `config/env.ts` validates both
-variables at startup and fails with a clear message when either is missing,
-so misconfigured environments surface before a single test runs.
+UI projects inherit `uiEnv.baseUrl` (from `UI_BASE_URL`) through the global
+`use.baseURL` in `playwright.config.ts`. The `api` project overrides `baseURL`
+with `apiEnv.baseUrl` (from `API_BASE_URL`) at the project level. `config/env.ts`
+validates all seven required variables and checks that the two base URLs are
+valid URLs. It throws at config load, listing every missing or invalid variable,
+so misconfigured environments fail before a single test runs.
 
 ---
 

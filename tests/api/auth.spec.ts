@@ -119,6 +119,9 @@ test.describe("Auth API", () => {
       const response = await request.get("/auth/me");
 
       expect(response.status()).toBe(401);
+
+      const body = (await response.json()) as { message: string };
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
 });

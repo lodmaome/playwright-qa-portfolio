@@ -9,19 +9,23 @@
 | Page Objects | `FeaturePage.ts` | `CartPage.ts` |
 | Fixtures | `feature.fixture.ts` | `cart.fixture.ts` |
 | Zod schemas | `resource.schema.ts` | `product.schema.ts` |
+| Test data | `feature.data.ts` in `tests/data/` | `login.data.ts`, `ui-sorting.data.ts` |
+| Shared helpers | `feature.helper.ts` next to the specs that use it | `axe.helper.ts`, `keyboard.helper.ts` |
+| API client and endpoint wrappers | `apiClient.ts`, `feature.api.ts` in `tests/api/` | `apiClient.ts`, `auth.api.ts` |
+| Shared constants | `constants/` (one file per domain) | `customer.ts`, `messages.ts` |
 
 ---
 
 ## Page Object conventions
 
-All Page Object constructors use the explicit `readonly page: Page` pattern:
+Page Objects extend `BasePage` (`pages/BasePage.ts`), which holds the shared
+`readonly page: Page` field, the explicit constructor, and the `title` locator:
 
 ```ts
-export class CartPage {
-  readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
+export class CartPage extends BasePage {
+  async goToCheckout(): Promise<CheckoutInformationPage> {
+    await this.page.locator("#checkout").click();
+    return new CheckoutInformationPage(this.page);
   }
 }
 ```
@@ -40,14 +44,16 @@ Do not use the TypeScript private-shorthand constructor
 
 ## Fixture guide
 
-The fixture chain is `inventoryTest → cartTest → checkoutTest`.
+The fixture chain is `inventoryTest → cartTest → test`, where the last step is
+the checkout fixtures in `fixtures/checkout.fixture.ts`. Checkout fixtures chain
+in the same way: `checkoutReady → checkoutOverviewReady → completedCheckout`.
 
 | Fixture(s) | Import path |
 |---|---|
 | `loginPage` | `../../fixtures/login.fixture` |
-| `inventoryPage`, `inventoryPageWithItem` | `../../fixtures` |
-| `cartPage`, `cartPageWithItem` | `../../fixtures` (as `cartTest`) |
-| `checkoutReady`, `completedCheckout` | `../../fixtures` (default `test`) |
+| `inventoryPage`, `inventoryPageWithItem` | `../../fixtures` (as `inventoryTest`) |
+| `cartPage`, `cartPageWithItem`, `cartPageWithMultipleItems` | `../../fixtures` (as `cartTest`) |
+| `checkoutReady`, `checkoutOverviewReady`, `completedCheckout` | `../../fixtures` (as `test`) |
 | `authApi` | `../../fixtures/api.fixture` |
 
 `fixtures/index.ts` re-exports everything, so most specs need only:
@@ -103,26 +109,37 @@ Regenerate baselines only after an intentional UI change:
 npx playwright test --project=visual --update-snapshots
 ```
 
+Playwright appends the OS to each snapshot name. A local run on Windows writes
+`*-visual-win32.png` files, and a run on Linux writes `*-visual-linux.png`. CI
+runs on Linux, so it compares against the `-linux` files. The `-win32` files are
+used only by local runs on Windows.
+
 The CI workflow `update-visual-snapshots.yml` can be triggered manually via
-`workflow_dispatch` to regenerate and upload snapshots as an artefact.
+`workflow_dispatch` to regenerate the Linux baselines and upload them as an
+artefact. See the README's CI notes for how to commit them.
 
 ---
 
 ## `test.skip` vs `test.fail`
 
-Use `test.skip` when the test covers a **real application bug** that is not
-yet fixed. Include a comment that names:
+Use `test.fail` for a **real application bug** that is not yet fixed. The test
+asserts the correct behaviour, so it fails while the bug exists and is reported
+as an expected failure. When the bug is fixed the test starts passing, `test.fail`
+reports that as a failure, and the guard must be removed. Include a comment that names:
 - the expected behaviour
 - why the app currently fails it
 - any relevant spec or standard (WCAG criterion, API contract, etc.)
 
 ```ts
-// Application bug: focus moves to the submit button after a failed login
-// instead of the error message, violating WCAG 4.1.3.
-// Skipped until fixed upstream.
-test.skip("should focus error message on failed login", async ({ loginPage }) => { ... });
+// SauceDemo accessibility bug: after a failed login, browser focus stays on the
+// login button instead of moving to the error message container.
+test.fail(
+  "moves focus to the error message after invalid credentials are submitted",
+  async ({ loginPage }) => { ... },
+);
 ```
 
-Use `test.fail` only as an intentional regression guard — it asserts that the
-test *must* fail and will itself fail if the test starts passing. It is not a
-placeholder for "fix this later."
+Use `test.skip` only when a test cannot run in the current environment (for
+example, a test that needs a browser the runner does not have). Do not use
+`test.skip` for a known bug, because a skipped test gives no signal when the bug
+is fixed.

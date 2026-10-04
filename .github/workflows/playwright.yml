@@ -34,7 +34,7 @@ jobs:
 
       - name: Read Playwright version
         id: playwright-version
-        run: echo "version=$(node -p \"require('@playwright/test/package.json').version\")" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
         id: browser-cache
@@ -82,7 +82,7 @@ jobs:
 
   publish-allure:
     needs: test
-    if: ${{ always() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       pages: write

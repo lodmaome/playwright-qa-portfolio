@@ -297,6 +297,9 @@ test.describe("Users API", () => {
       const response = await authApi.delete("/users/999999");
 
       expect(response.status()).toBe(404);
+
+      const body = (await response.json()) as { message: string };
+      expect(body).toMatchObject({ message: expect.any(String) });
     });
   });
 });
