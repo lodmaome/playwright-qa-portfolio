@@ -1,33 +1,38 @@
+# Actions are pinned to major-version tags for readability. For a stronger
+# supply-chain guarantee, pin each `uses:` to a full commit SHA instead.
 name: Update Visual Snapshots
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   update-snapshots:
     runs-on: ubuntu-latest
-
-    env:
-      UI_BASE_URL: ${{ secrets.UI_BASE_URL }}
-      STANDARD_USERNAME: ${{ secrets.STANDARD_USERNAME }}
-      LOCKED_USERNAME: ${{ secrets.LOCKED_USERNAME }}
-      STANDARD_PASSWORD: ${{ secrets.STANDARD_PASSWORD }}
-      API_BASE_URL: ${{ secrets.API_BASE_URL }}
-      API_USERNAME: ${{ secrets.API_USERNAME }}
-      API_PASSWORD: ${{ secrets.API_PASSWORD }}
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
 
       - run: npm ci
 
       - run: npx playwright install chromium --with-deps
 
       - name: Update snapshots
+        env:
+          UI_BASE_URL: ${{ secrets.UI_BASE_URL }}
+          STANDARD_USERNAME: ${{ secrets.STANDARD_USERNAME }}
+          LOCKED_USERNAME: ${{ secrets.LOCKED_USERNAME }}
+          STANDARD_PASSWORD: ${{ secrets.STANDARD_PASSWORD }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          API_USERNAME: ${{ secrets.API_USERNAME }}
+          API_PASSWORD: ${{ secrets.API_PASSWORD }}
         run: npx playwright test --project=visual --update-snapshots --workers=4
 
       - uses: actions/upload-artifact@v7

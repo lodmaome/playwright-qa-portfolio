@@ -2,7 +2,6 @@ import { uiEnv } from "../../config/env";
 import { expect, test } from "../../fixtures/login.fixture";
 import { InventoryPage } from "../../pages/InventoryPage";
 import { setAllureMeta } from "../../tests/utils/allure";
-import { tabUntilFocused } from "./keyboard.helper";
 
 test.describe("Keyboard Navigation", () => {
   test.beforeEach(() => {
@@ -18,7 +17,8 @@ test.describe("Keyboard Navigation", () => {
   test("moves focus through the login form fields in tab order", async ({
     loginPage,
   }) => {
-    await tabUntilFocused(loginPage.page, loginPage.usernameInput);
+    await loginPage.page.keyboard.press("Tab");
+    await expect(loginPage.usernameInput).toBeFocused();
 
     await loginPage.page.keyboard.press("Tab");
     await expect(loginPage.passwordInput).toBeFocused();
@@ -30,7 +30,8 @@ test.describe("Keyboard Navigation", () => {
   test("logs in successfully using the keyboard only", async ({
     loginPage,
   }) => {
-    await tabUntilFocused(loginPage.page, loginPage.usernameInput);
+    await loginPage.page.keyboard.press("Tab");
+    await expect(loginPage.usernameInput).toBeFocused();
     await loginPage.page.keyboard.type(uiEnv.username);
 
     await loginPage.page.keyboard.press("Tab");

@@ -65,13 +65,24 @@ npm run report:open         # open generated Allure report
 
 The Playwright HTML report retains traces, screenshots, and videos for failed
 tests. The CI workflow publishes the Allure report to GitHub Pages after each
-run.
+push to `main`. Pull requests and other branches upload it only as the
+`allure-report` artifact of the run.
 
 ## Docs
 
 - [Architecture decisions](docs/ARCHITECTURE.md) — why the suite is structured the way it is
 - [Test strategy](docs/TEST-STRATEGY.md) — naming conventions, POM pattern, fixture guide, skip vs fail
 - [Environment setup](docs/ENVIRONMENT.md) — `.env` config, base URLs, multi-env and CI strategy
+
+## CI notes
+
+- **Fork pull requests** do not receive repository secrets, so the test run fails at
+  config load with a clear missing-variable error. Outside contributions need a
+  maintainer to run the suite from a branch in this repository.
+- **Refreshing visual baselines:** run the `Update Visual Snapshots` workflow manually
+  from the Actions tab. It regenerates the Linux baselines and uploads them as the
+  `playwright-snapshots` artifact. Download the artifact, copy the `*-visual-linux.png`
+  files into the matching `tests/ui/**/*-snapshots/` folders, and commit them.
 
 ## Known limitations
 
