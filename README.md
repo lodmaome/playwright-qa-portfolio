@@ -99,6 +99,22 @@ push to `main`. Pull requests and other branches upload it only as the
   run causes the session to expire mid-suite, authenticated tests fail with redirect errors.
   Re-running regenerates the token.
 
+## Commit messages
+
+This repo uses [Conventional Commits](https://www.conventionalcommits.org):
+
+- `feat:` new tests or capabilities
+- `fix:` corrections to tests, config, or the CI workflow
+- `refactor:` restructuring with no change in behavior
+- `test:` changes to test coverage only
+- `docs:` documentation only
+- `chore:` maintenance such as dependencies, licensing, or tooling
+
+Example: `fix: correct lint alias so cartTest.only() is flagged`
+
+Commits made before this convention was adopted don't follow it. The history
+was left unchanged rather than rewritten.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). This covers the code in this repository only.
