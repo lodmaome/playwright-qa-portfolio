@@ -109,6 +109,24 @@ Live Allure report: [lodmaome.github.io/playwright-qa-portfolio](https://lodmaom
   run causes the session to expire mid-suite, authenticated tests fail with redirect errors.
   Re-running regenerates the token.
 
+## Not covered
+
+These are deliberate gaps in the current suite, listed so the limits are clear:
+
+- **Cart quantity changes.** The UI cart tests cover adding and removing items.
+  They don't change an item's quantity.
+- **Persistence.** No test reloads the page or signs in again to confirm the cart
+  survives. The API cart tests check the response to POST, PATCH, and DELETE only,
+  because DummyJSON doesn't store writes (see the note in `tests/api/cart.spec.ts`).
+- **Tax amount.** The checkout overview tests confirm that tax is a non-negative
+  amount and that the order total equals the item total plus tax. They don't check
+  the tax rate or the item prices.
+- **Logout and session expiry.** There is no logout test. Session expiry is covered
+  under Known limitations.
+- **Responsive and mobile layouts.** No test runs at a mobile viewport.
+- **Accessibility depth.** axe-core checks only critical and serious impacts, so
+  minor issues are not reported.
+
 ## Commit messages
 
 This repo uses [Conventional Commits](https://www.conventionalcommits.org):
