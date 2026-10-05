@@ -1,0 +1,74 @@
+# Measures how often the live-site performance tests fail when repeated.
+# Runs on demand only: each repeat hits saucedemo.com.
+name: Flakiness Measurement
+
+on:
+  workflow_dispatch:
+    inputs:
+      repeat:
+        description: "Times to repeat each performance test"
+        required: true
+        default: "10"
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - run: npm ci
+
+      - run: npx playwright install chromium --with-deps
+
+      - name: Repeat performance tests
+        env:
+          UI_BASE_URL: ${{ secrets.UI_BASE_URL }}
+          STANDARD_USERNAME: ${{ secrets.STANDARD_USERNAME }}
+          LOCKED_USERNAME: ${{ secrets.LOCKED_USERNAME }}
+          STANDARD_PASSWORD: ${{ secrets.STANDARD_PASSWORD }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          API_USERNAME: ${{ secrets.API_USERNAME }}
+          API_PASSWORD: ${{ secrets.API_PASSWORD }}
+          PLAYWRIGHT_JSON_OUTPUT_NAME: flakiness-results.json
+        run: >
+          npx playwright test tests/ui/inventory/inventory.spec.ts
+          --project=ui-e2e-chromium
+          --grep Performance
+          --repeat-each=${{ inputs.repeat }}
+          --retries=0
+          --reporter=json
+
+      - name: Write pass rate to job summary
+        if: always()
+        run: |
+          if [ ! -f flakiness-results.json ]; then
+            echo "No results file was produced. The run failed before reporting." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node -e '
+            const fs = require("fs");
+            const { stats } = JSON.parse(fs.readFileSync("flakiness-results.json", "utf8"));
+            const runs = stats.expected + stats.unexpected + stats.flaky;
+            const rate = runs === 0 ? 0 : (100 * stats.expected) / runs;
+            const lines = [
+              "## Performance test flakiness",
+              "",
+              `Repeats per test: ${process.env.REPEAT}`,
+              "",
+              `| Runs | Passed | Failed | Pass rate |`,
+              `|---|---|---|---|`,
+              `| ${runs} | ${stats.expected} | ${stats.unexpected} | ${rate.toFixed(1)}% |`,
+            ];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          '
+        env:
+          REPEAT: ${{ inputs.repeat }}
