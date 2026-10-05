@@ -9,12 +9,18 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 
 ## Coverage
 
-| Layer | Tool | Spec files | Location |
-|---|---|---|---|
-| UI E2E | Playwright POM + fixtures | 7 | `tests/ui/` |
-| API contract | APIRequestContext + Zod | 6 | `tests/api/` |
-| Visual regression | Playwright snapshots | 3 | `*-visual.spec.ts` |
-| Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | `tests/accessibility/` |
+| Layer | Tool | Spec files | Tests | Location |
+|---|---|---|---|---|
+| UI E2E | Playwright POM + fixtures | 7 | 133 runs (51 unique) | `tests/ui/` |
+| API contract | APIRequestContext + Zod | 6 | 77 | `tests/api/` |
+| Visual regression | Playwright snapshots | 3 | 7 | `*-visual.spec.ts` |
+| Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | 9 | `tests/accessibility/` |
+| Config | Env validation | 1 | 6 | `tests/config/` |
+| **Total** | | **22** | **233 runs (151 unique)** | |
+
+The UI E2E count includes the login suite (10 tests, one browser) and the
+authenticated suite (41 tests, run on Chromium, Firefox, and WebKit). Counts come
+from `npx playwright test --list`, and the auth setup step is not in the table.
 
 ## Quick start
 
