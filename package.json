@@ -1,6 +1,12 @@
 {
   "name": "playwright-qa-portfolio",
   "version": "0.1.0",
+  "description": "Playwright + TypeScript QA suite: UI E2E, API contract, visual regression and accessibility tests against SauceDemo and DummyJSON.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lodmaome/playwright-qa-portfolio.git"
+  },
   "private": true,
   "scripts": {
     "lint": "eslint .",

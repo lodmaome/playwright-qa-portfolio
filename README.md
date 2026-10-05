@@ -98,3 +98,8 @@ push to `main`. Pull requests and other branches upload it only as the
 - **Session expiry** — `storageState` is written once per run by `ui-setup`. If a very long
   run causes the session to expire mid-suite, authenticated tests fail with redirect errors.
   Re-running regenerates the token.
+
+## License
+
+MIT — see [LICENSE](LICENSE). This covers the code in this repository only.
+SauceDemo and DummyJSON are third-party services with their own terms.
