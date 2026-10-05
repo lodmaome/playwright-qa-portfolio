@@ -1,0 +1,11 @@
+{
+  "name": "playwright-qa-portfolio",
+  "image": "mcr.microsoft.com/playwright:v1.60.0-noble",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "postCreateCommand": "npm ci && npx playwright install --with-deps",
+  "remoteUser": "pwuser"
+}
