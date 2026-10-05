@@ -77,6 +77,10 @@ tests. The CI workflow publishes the Allure report to GitHub Pages after each
 push to `main`. Pull requests and other branches upload it only as the
 `allure-report` artifact of the run.
 
+Live Allure report: [lodmaome.github.io/playwright-qa-portfolio](https://lodmaome.github.io/playwright-qa-portfolio/)
+
+![Allure overview of the latest CI run](docs/images/allure-overview.png)
+
 ## Docs
 
 - [Architecture decisions](docs/ARCHITECTURE.md) — why the suite is structured the way it is
