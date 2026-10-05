@@ -7,14 +7,27 @@
 A full-stack test automation suite targeting a production-grade e-commerce app
 ([SauceDemo](https://www.saucedemo.com)) and a REST API ([DummyJSON](https://dummyjson.com)).
 
+## Devcontainer
+
+`.devcontainer/devcontainer.json` builds on the official Playwright image
+(`mcr.microsoft.com/playwright:v1.60.0-noble`) with Node 22, so local runs match the
+CI environment. The image tag must match the `@playwright/test` version in
+`package.json`. When you upgrade Playwright, change both in the same commit.
+
 ## Coverage
 
-| Layer | Tool | Spec files | Location |
+| Layer | Tool | Tests | Location |
 |---|---|---|---|
-| UI E2E | Playwright POM + fixtures | 7 | `tests/ui/` |
-| API contract | APIRequestContext + Zod | 6 | `tests/api/` |
-| Visual regression | Playwright snapshots | 3 | `*-visual.spec.ts` |
-| Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | `tests/accessibility/` |
+| UI E2E (authenticated) | Playwright POM + fixtures | 123 (41 × 3 browsers) | `tests/ui/` |
+| UI login | Playwright POM | 10 | `tests/ui/login/` |
+| Auth setup | Playwright | 1 | `tests/ui/auth.setup.ts` |
+| API contract | APIRequestContext + Zod | 77 | `tests/api/` |
+| Visual regression | Playwright snapshots | 7 | `*-visual.spec.ts` |
+| Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 9 | `tests/accessibility/` |
+| Config | Playwright | 6 | `tests/config/` |
+
+Total: 233 tests. Counts come from `npx playwright test --list` and will drift as
+tests are added.
 
 ## Quick start
 
@@ -71,11 +84,18 @@ tests. The CI workflow publishes the Allure report to GitHub Pages after each
 push to `main`. Pull requests and other branches upload it only as the
 `allure-report` artifact of the run.
 
+![Allure overview of the latest run on main](docs/images/allure-overview.png)
+
+![Playwright HTML report for a failing test (a deliberately failing demo test)](docs/images/failing-test.png)
+
 ## Docs
 
 - [Architecture decisions](docs/ARCHITECTURE.md) — why the suite is structured the way it is
 - [Test strategy](docs/TEST-STRATEGY.md) — naming conventions, POM pattern, fixture guide, skip vs fail
 - [Environment setup](docs/ENVIRONMENT.md) — `.env` config, base URLs, multi-env and CI strategy
+- [Bugs caught and bugs it had](docs/BUGS-CAUGHT.md) — real problems found in the suite and the app, with evidence and fixes
+- [What this suite does not cover](docs/NOT-COVERED.md) — stated limits: stateless API, live sites, keyboard and accessibility scope
+- [Contributing](CONTRIBUTING.md) — commit message conventions and pull request expectations
 
 ## CI notes
 

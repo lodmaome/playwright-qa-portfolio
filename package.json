@@ -1,6 +1,13 @@
 {
   "name": "playwright-qa-portfolio",
   "version": "0.1.0",
+  "description": "Playwright and TypeScript QA portfolio: UI, API, visual, accessibility, and config tests against SauceDemo and DummyJSON",
+  "license": "MIT",
+  "author": "lodmaome",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lodmaome/playwright-qa-portfolio.git"
+  },
   "private": true,
   "scripts": {
     "lint": "eslint .",
@@ -21,7 +28,7 @@
     "@types/node": "^25.9.3",
     "allure-commandline": "^2.42.1",
     "allure-playwright": "^3.10.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.5",
     "eslint": "^10.11.0",
     "eslint-plugin-playwright": "^2.10.4",
     "globals": "^17.13.0",
