@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { CartPage } from "./CartPage";
+import { LoginPage } from "./LoginPage";
 
 export class InventoryPage extends BasePage {
   get cartBadge() {
@@ -46,5 +47,11 @@ export class InventoryPage extends BasePage {
   async goToCart(): Promise<CartPage> {
     await this.page.locator(".shopping_cart_link").click();
     return new CartPage(this.page);
+  }
+
+  async logout(): Promise<LoginPage> {
+    await this.page.locator("#react-burger-menu-btn").click();
+    await this.page.locator("#logout_sidebar_link").click();
+    return new LoginPage(this.page);
   }
 }

@@ -11,15 +11,15 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 
 | Layer | Tool | Spec files | Tests | Location |
 |---|---|---|---|---|
-| UI E2E | Playwright POM + fixtures | 7 | 133 runs (51 unique) | `tests/ui/` |
+| UI E2E | Playwright POM + fixtures | 7 | 142 runs (54 unique) | `tests/ui/` |
 | API contract | APIRequestContext + Zod | 6 | 77 | `tests/api/` |
 | Visual regression | Playwright snapshots | 3 | 7 | `*-visual.spec.ts` |
 | Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | 9 | `tests/accessibility/` |
 | Config | Env validation | 1 | 6 | `tests/config/` |
-| **Total** | | **22** | **233 runs (151 unique)** | |
+| **Total** | | **22** | **242 runs (154 unique)** | |
 
 The UI E2E count includes the login suite (10 tests, one browser) and the
-authenticated suite (41 tests, run on Chromium, Firefox, and WebKit). Counts come
+authenticated suite (44 tests, run on Chromium, Firefox, and WebKit). Counts come
 from `npx playwright test --list`, and the auth setup step is not in the table.
 
 ## Quick start
@@ -115,14 +115,14 @@ These are deliberate gaps in the current suite, listed so the limits are clear:
 
 - **Cart quantity changes.** The UI cart tests cover adding and removing items.
   They don't change an item's quantity.
-- **Persistence.** No test reloads the page or signs in again to confirm the cart
-  survives. The API cart tests check the response to POST, PATCH, and DELETE only,
-  because DummyJSON doesn't store writes (see the note in `tests/api/cart.spec.ts`).
+- **Persistence across sessions.** A page reload keeps the cart, but no test signs
+  in again later to confirm it survives a new session. The API cart tests check the
+  response to POST, PATCH, and DELETE only, because DummyJSON doesn't store writes
+  (see the note in `tests/api/cart.spec.ts`).
 - **Tax amount.** The checkout overview tests confirm that tax is a non-negative
   amount and that the order total equals the item total plus tax. They don't check
   the tax rate or the item prices.
-- **Logout and session expiry.** There is no logout test. Session expiry is covered
-  under Known limitations.
+- **Session expiry.** Covered under Known limitations.
 - **Responsive and mobile layouts.** No test runs at a mobile viewport.
 - **Accessibility depth.** axe-core checks only critical and serious impacts, so
   minor issues are not reported.

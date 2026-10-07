@@ -46,6 +46,34 @@ inventoryTest.describe("Inventory", () => {
     );
   });
 
+  inventoryTest.describe("Session", () => {
+    inventoryTest.beforeEach(() => {
+      setAllureMeta.bundle({
+        feature: "Authentication",
+        story: "Logout",
+        tags: ["auth", "logout"],
+      });
+    });
+
+    inventoryTest(
+      "logs out and returns to the login page",
+      async ({ inventoryPage }) => {
+        const loginPage = await inventoryPage.logout();
+        await expect(loginPage.loginButton).toBeVisible();
+        await expect(inventoryPage.page).not.toHaveURL(/inventory/);
+      },
+    );
+
+    inventoryTest(
+      "blocks direct access to the inventory page after logout",
+      async ({ inventoryPage }) => {
+        await inventoryPage.logout();
+        await inventoryPage.goto();
+        await expect(inventoryPage.page).not.toHaveURL(/inventory/);
+      },
+    );
+  });
+
   inventoryTest.describe("Performance", () => {
     inventoryTest.beforeEach(() => {
       setAllureMeta.bundle({

@@ -59,6 +59,17 @@ cartTest.describe("Cart", () => {
         await expect(cartPageWithItem.cartBadge).toBeHidden();
       },
     );
+
+    cartTest(
+      "keeps the item in the cart after a page reload",
+      async ({ cartPageWithItem }) => {
+        await cartPageWithItem.page.reload();
+        await expect(cartPageWithItem.products).toContainText([
+          PRODUCTS.BIKE_LIGHT,
+        ]);
+        await expect(cartPageWithItem.cartBadge).toHaveText("1");
+      },
+    );
   });
 
   cartTest.describe("Navigation", () => {
