@@ -86,6 +86,7 @@ Live Allure report: [lodmaome.github.io/playwright-qa-portfolio](https://lodmaom
 - [Architecture decisions](docs/ARCHITECTURE.md) — why the suite is structured the way it is
 - [Test strategy](docs/TEST-STRATEGY.md) — naming conventions, POM pattern, fixture guide, skip vs fail
 - [Environment setup](docs/ENVIRONMENT.md) — `.env` config, base URLs, multi-env and CI strategy
+- [Bugs this suite has caught](docs/BUGS-CAUGHT.md) — real gaps found in the suite itself, with evidence and fixes
 
 ## CI notes
 
