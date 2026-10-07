@@ -33,6 +33,31 @@ npx playwright install --with-deps   # --with-deps installs system libraries on 
 npx playwright test       # all projects
 ```
 
+For an environment that matches CI exactly (Linux, pinned browser versions,
+no `playwright install` step needed), open this repo in VS Code with the
+[Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+extension and Docker Desktop installed, then run "Dev Containers: Reopen in
+Container". See [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json).
+The `.env` step above still applies inside the container — it's the same
+project folder, not a copy.
+
+**On Windows with Docker Desktop**, the first attempt may fail with
+`accessing specified distro mount service: ... no such file or directory`.
+This is the Dev Containers extension trying to forward a WSL GUI (Wayland)
+socket that may not exist on your system, not a problem with the image or
+the project. Add this to your VS Code user `settings.json` and retry:
+
+```json
+"dev.containers.mountWaylandSocket": false
+```
+
+**`node_modules` is shared with the host**, since the container mounts the
+real project folder rather than a copy. Its `postCreateCommand` runs `npm ci`
+inside Linux, which overwrites `node_modules` for Linux on disk. If you go
+back to a plain Windows terminal afterward and commands like `npm run lint`
+fail with something like `'eslint' is not recognized`, run `npm ci` again on
+Windows to switch it back.
+
 ## Projects
 
 | Project | What it runs | Needs auth? |

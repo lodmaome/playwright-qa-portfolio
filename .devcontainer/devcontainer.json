@@ -1,0 +1,10 @@
+{
+  "name": "playwright-qa-portfolio",
+  "image": "mcr.microsoft.com/playwright:v1.60.0-noble",
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-playwright.playwright"]
+    }
+  }
+}
