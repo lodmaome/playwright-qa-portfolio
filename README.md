@@ -87,6 +87,7 @@ Live Allure report: [lodmaome.github.io/playwright-qa-portfolio](https://lodmaom
 - [Test strategy](docs/TEST-STRATEGY.md) — naming conventions, POM pattern, fixture guide, skip vs fail
 - [Environment setup](docs/ENVIRONMENT.md) — `.env` config, base URLs, multi-env and CI strategy
 - [Bugs this suite has caught](docs/BUGS-CAUGHT.md) — real gaps found in the suite itself, with evidence and fixes
+- [Flakiness measurement](docs/FLAKINESS.md) — repeated runs and real margins for the performance budgets
 
 ## CI notes
 
@@ -105,7 +106,8 @@ Live Allure report: [lodmaome.github.io/playwright-qa-portfolio](https://lodmaom
   network, and the LCP test additionally reads a `PerformanceObserver` entry inside
   `page.evaluate()`. Both are sensitive to headless rendering speed and CI container
   CPU/network variance. Consider `test.skip(!!process.env.CI, "...")` on either if it
-  proves flaky in practice.
+  proves flaky in practice. See [Flakiness measurement](docs/FLAKINESS.md) for data on
+  how much headroom the budgets have.
 - **Session expiry** — `storageState` is written once per run by `ui-setup`. If a very long
   run causes the session to expire mid-suite, authenticated tests fail with redirect errors.
   Re-running regenerates the token.
