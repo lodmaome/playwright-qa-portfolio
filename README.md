@@ -16,7 +16,7 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 | Visual regression | Playwright snapshots | 3 | 7 | `*-visual.spec.ts` |
 | Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | 9 | `tests/accessibility/` |
 | Config | Env validation | 1 | 6 | `tests/config/` |
-| **Total** | | **22** | **242 runs (154 unique)** | |
+| **Total** | | **22** | **241 runs (153 unique)** | |
 
 The UI E2E count includes the login suite (10 tests, one browser) and the
 authenticated suite (44 tests, run on Chromium, Firefox, and WebKit). Counts come
