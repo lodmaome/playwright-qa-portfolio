@@ -23,8 +23,6 @@
  *   PAGINATION_NONEMPTY_SCENARIOS — no limit set; just assert something returned
  */
 
-import { z } from "zod";
-
 interface PaginationScenarioBase {
   id: string;
   description: string;
@@ -219,16 +217,3 @@ export const SEARCH_SCENARIOS: readonly SearchScenario[] = [
     rationale: "Boundary: special characters — asserts graceful handling.",
   },
 ] as const;
-
-export const ProductApiResponseSchema = z.object({
-  products: z.array(
-    z.object({
-      id: z.number().positive(),
-      title: z.string().min(1),
-      price: z.number().positive(),
-    }),
-  ),
-  total: z.number().int().nonnegative(),
-  skip: z.number().int().nonnegative(),
-  limit: z.number().int().positive(),
-});

@@ -82,10 +82,11 @@ schemas assert the full shape — type, constraints, optionality — and fail wi
 a descriptive error that names the offending field.
 
 The schemas in `tests/api/schemas/` are also the canonical documentation of
-what the API is expected to return. Schemas cover the product and user
-resources. Error responses are checked for a `message` field with
-`toMatchObject`, not with a schema, so a change from `{ message }` to `{ error }`
-is caught by those assertions rather than by a shared schema.
+what the API is expected to return. Live user responses are validated with Zod.
+The product schema is covered by negative tests only.
+Error responses are checked for a `message` field with `toMatchObject`,
+not with a schema, so a change from `{ message }` to `{ error }` is caught by
+those assertions rather than by a shared schema.
 
 ---
 

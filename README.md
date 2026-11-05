@@ -12,7 +12,7 @@ A full-stack test automation suite targeting a production-grade e-commerce app
 | Layer | Tool | Spec files | Tests | Location |
 |---|---|---|---|---|
 | UI E2E | Playwright POM + fixtures | 7 | 142 runs (54 unique) | `tests/ui/` |
-| API contract | APIRequestContext + Zod | 6 | 77 | `tests/api/` |
+| API contract | APIRequestContext; Zod validates user responses | 6 | 77 | `tests/api/` |
 | Visual regression | Playwright snapshots | 3 | 7 | `*-visual.spec.ts` |
 | Accessibility | axe-core (WCAG 2.1 AA, critical + serious impacts only) | 5 | 9 | `tests/accessibility/` |
 | Config | Env validation | 1 | 6 | `tests/config/` |
@@ -154,6 +154,10 @@ These are deliberate gaps in the current suite, listed so the limits are clear:
 - **Responsive and mobile layouts.** No test runs at a mobile viewport.
 - **Accessibility depth.** axe-core checks only critical and serious impacts, so
   minor issues are not reported.
+- **Product responses against the Zod schema.** The product schema is exercised
+  only by negative tests on hand-built objects. Live `/products` responses are
+  checked with targeted assertions on the fields each test cares about (counts,
+  sort order, search matches), not with the schema.
 
 ## Commit messages
 
